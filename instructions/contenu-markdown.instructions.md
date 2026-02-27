@@ -1,0 +1,48 @@
+---
+applyTo: "**/*.md"
+---
+
+# Directives de contenu Markdown
+
+Garder le contenu propre, structuré et professionnel. Éviter le bruit visuel.
+
+## Style d'écriture
+
+- **Être concis** : supprimer les mots inutiles
+- **Être actionnable** : indiquer clairement ce qu'il faut faire
+- **Être scannable** : utiliser des listes, des titres et des paragraphes courts
+- **Être cohérent** : suivre les patterns établis dans le repository
+- **Privilégier la prose fluide** : préférer les paragraphes narratifs aux listes et gras excessifs. Les listes à puces sont importantes mais doivent être utilisées avec parcimonie pour mettre en avant les points clés.
+- **Créer des transitions** : relier les concepts avec des paragraphes de transition qui montrent la progression
+- **Écrire de façon conversationnelle** : avoir le ton d'un praticien expérimenté, pas d'un document de spécification
+
+## Structure du contenu
+
+### Titres
+- Utiliser une hiérarchie sémantique (h1 → h2 → h3)
+- Garder les titres descriptifs et actionnables
+- Ne pas sauter de niveaux de titre
+
+### Listes
+- Utiliser la syntaxe Markdown correcte pour les listes
+- Maintenir une indentation cohérente
+- Garder les éléments concis et lisibles d'un coup d'œil
+
+### Sections
+- Utiliser `---` pour les séparations de sections si nécessaire
+- Regrouper le contenu logiquement
+- Éviter les séparateurs visuels inutiles
+
+## Anti-patterns
+
+- Entourer chaque section d'un bloc stylisé
+- Décorations visuelles excessives
+- Structures de titres incohérentes
+- Murs de texte sans séparations
+- Listes à puces pour chaque phrase — préférer des paragraphes
+
+## Langue
+
+- Ce repository est en **français**
+- La documentation, les commentaires et les messages sont rédigés en français
+- Les noms de fichiers et variables restent en anglais (convention technique)
