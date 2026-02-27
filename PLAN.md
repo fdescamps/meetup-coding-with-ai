@@ -45,14 +45,15 @@ meetup-coding-with-ai/
 ├── PLAN.md                                           # Ce fichier (pitch + plan)
 ├── .github/
 │   └── copilot-instructions.md                       # Instructions globales Copilot
-├── instructions/
-│   ├── object-calisthenics.js.instructions.md        # Règles de qualité JS/TS
-│   └── contenu-markdown.instructions.md              # Règles de rédaction Markdown
-├── agents/
-│   └── mentor-dev-senior.agent.fr.md                 # Agent mentor (méthode Socratique)
-├── skills/
-│   └── run-tests/
-│       └── SKILL.md                                  # Skill : lancer les tests
+├── .apm/
+│   ├── instructions/
+│   │   ├── object-calisthenics.js.instructions.md    # Règles de qualité JS/TS
+│   │   └── contenu-markdown.instructions.md          # Règles de rédaction Markdown
+│   ├── agents/
+│   │   └── mentor-dev-senior.agent.fr.md             # Agent mentor (méthode Socratique)
+│   ├── skills/
+│   │   └── run-tests/
+│   │       └── SKILL.md                              # Skill : lancer les tests
 └── src/
     └── exemple/
         └── commande.js                               # Fichier de démo live (Object Calisthenics)
@@ -88,7 +89,7 @@ meetup-coding-with-ai/
 
 ### Étape 2 — Démo Instructions — Object Calisthenics (8 min)
 
-**Action 1** : Ouvrir `instructions/object-calisthenics.js.instructions.md`
+**Action 1** : Ouvrir `.apm/instructions/object-calisthenics.js.instructions.md`
 
 **Points clés à dire** :
 - "Le frontmatter `applyTo: '**/*.{js,ts,jsx,tsx}'` dit à Copilot d'appliquer ces règles sur tous les fichiers JS/TS"
@@ -115,7 +116,7 @@ meetup-coding-with-ai/
 ### Étape 3 — Démo Skill — Run Tests (5 min)
 
 **Action** : Dans le Chat Copilot, taper : `@workspace /run-tests`  
-(ou ouvrir `skills/run-tests/SKILL.md` pour montrer le contenu)
+(ou ouvrir `.apm/skills/run-tests/SKILL.md` pour montrer le contenu)
 
 **Points clés à dire** :
 - "Un Skill, c'est une capacité structurée : Copilot sait exactement quoi faire"
@@ -126,7 +127,7 @@ meetup-coding-with-ai/
 
 ### Étape 4 — Démo Agent — Mentor Dev Senior (7 min)
 
-**Action 1** : Dans VS Code, passer en mode Agent, sélectionner `mentor-dev-senior`
+**Action 1** : Dans VS Code, passer en mode Agent, sélectionner `.apm/agents/mentor-dev-senior`
 
 **Action 2** : Poser cette question :
 
@@ -146,9 +147,9 @@ meetup-coding-with-ai/
 
 ### Messages clés à retenir
 
-1. **Les Instructions** = les règles que Copilot applique automatiquement → qualité sans friction
-2. **Les Skills** = les capacités structurées que vous donnez à Copilot → actions reproductibles
-3. **Les Agents** = les personas que vous définissez pour Copilot → comportements adaptés au contexte
+1. **Les Instructions** = les règles que Copilot applique automatiquement (dans `.apm/instructions/`) → qualité sans friction
+2. **Les Skills** = les capacités structurées que vous donnez à Copilot (dans `.apm/skills/`) → actions reproductibles
+3. **Les Agents** = les personas que vous définissez pour Copilot (dans `.apm/agents/`) → comportements adaptés au contexte
 4. **APM** = l'outil pour packager et partager tout ça dans votre équipe
 
 ---

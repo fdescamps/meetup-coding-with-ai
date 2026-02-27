@@ -15,6 +15,7 @@ Il illustre les **primitives GitHub Copilot** — Instructions, Skills et Agents
 
 ---
 
+
 ## Structure du repository
 
 ```
@@ -25,14 +26,15 @@ meetup-coding-with-ai/
 ├── PLAN.md                                           # Pitch + plan de démo
 ├── .github/
 │   └── copilot-instructions.md                       # Instructions globales Copilot
-├── instructions/
-│   ├── object-calisthenics.js.instructions.md        # Règles de qualité JS/TS
-│   └── contenu-markdown.instructions.md              # Règles de rédaction Markdown
-├── agents/
-│   └── mentor-dev-senior.agent.fr.md                 # Agent mentor (méthode Socratique)
-├── skills/
-│   └── run-tests/
-│       └── SKILL.md                                  # Skill : lancer les tests
+├── .apm/
+│   ├── instructions/
+│   │   ├── object-calisthenics.js.instructions.md    # Règles de qualité JS/TS
+│   │   └── contenu-markdown.instructions.md          # Règles de rédaction Markdown
+│   ├── agents/
+│   │   └── mentor-dev-senior.agent.fr.md             # Agent mentor (méthode Socratique)
+│   ├── skills/
+│   │   └── run-tests/
+│   │       └── SKILL.md                              # Skill : lancer les tests
 └── src/
     └── exemple/
         └── commande.js                               # Fichier de démo live
@@ -42,11 +44,12 @@ meetup-coding-with-ai/
 
 ## Les 3 primitives Copilot
 
+
 ### Instructions
 
-Les fichiers `*.instructions.md` définissent des règles que Copilot applique **automatiquement** sur les fichiers ciblés via le frontmatter `applyTo`.
+Les fichiers `.apm/instructions/*.instructions.md` définissent des règles que Copilot applique **automatiquement** sur les fichiers ciblés via le frontmatter `applyTo`.
 
-**Exemple** : les règles [Object Calisthenics](instructions/object-calisthenics.js.instructions.md) s'appliquent à tous les fichiers `*.js`, `*.ts`, `*.jsx` et `*.tsx`.
+**Exemple** : les règles [Object Calisthenics](.apm/instructions/object-calisthenics.js.instructions.md) s'appliquent à tous les fichiers `*.js`, `*.ts`, `*.jsx` et `*.tsx`.
 
 ```yaml
 ---
@@ -58,15 +61,15 @@ Copilot génère du code conforme à ces règles sans que le développeur n'ait 
 
 ### Skills
 
-Les fichiers `SKILL.md` définissent des **capacités structurées** que Copilot peut invoquer. Un Skill décrit une tâche de façon reproductible.
+Les fichiers `.apm/skills/**/SKILL.md` définissent des **capacités structurées** que Copilot peut invoquer. Un Skill décrit une tâche de façon reproductible.
 
-**Exemple** : [run-tests](skills/run-tests/SKILL.md) — détecte automatiquement Jest, Vitest ou pytest et résume les résultats.
+**Exemple** : [run-tests](.apm/skills/run-tests/SKILL.md) — détecte automatiquement Jest, Vitest ou pytest et résume les résultats.
 
 ### Agent
 
-Les fichiers `*.agent.md` définissent des **personas** pour le mode Agent de Copilot. Ils permettent de donner à Copilot un comportement précis, adapté à un contexte métier ou pédagogique.
+Les fichiers `.apm/agents/*.agent.md` définissent des **personas** pour le mode Agent de Copilot. Ils permettent de donner à Copilot un comportement précis, adapté à un contexte métier ou pédagogique.
 
-**Exemple** : [mentor-dev-senior](agents/mentor-dev-senior.agent.fr.md) — un mentor qui guide par les questions (méthode Socratique).
+**Exemple** : [mentor-dev-senior](.apm/agents/mentor-dev-senior.agent.fr.md) — un mentor qui guide par les questions (méthode Socratique).
 
 ---
 
@@ -82,11 +85,12 @@ apm install
 
 ---
 
+
 ## Utilisation directe (sans APM)
 
-1. Copier `instructions/` dans `.github/instructions/` de votre projet
-2. Copier `agents/` dans `.github/agents/` de votre projet
-3. Copier `skills/` dans `.github/skills/` de votre projet
+1. Copier `.apm/instructions/` dans `.github/instructions/` de votre projet
+2. Copier `.apm/agents/` dans `.github/agents/` de votre projet
+3. Copier `.apm/skills/` dans `.github/skills/` de votre projet
 4. VS Code + GitHub Copilot détectera automatiquement les fichiers
 
 ---
