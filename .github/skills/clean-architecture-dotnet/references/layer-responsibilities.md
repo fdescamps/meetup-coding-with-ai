@@ -412,55 +412,31 @@ public static class OrdersEndpoints
 
 ---
 
-## Validation with NetArchTest
+## Validation with ArchUnit
 
 Enforce these rules automatically:
 
 ```csharp
 [Fact]
-public void Domain_ShouldNotHaveDependencyOn_OtherLayers()
+public void Domain_ShouldNotDependOnOtherLayers()
 {
-    var result = Types.InAssembly(DomainAssembly)
-        .Should()
-        .NotHaveDependencyOn(ApplicationNamespace)
-        .And()
-        .NotHaveDependencyOn(InfrastructureNamespace)
-        .And()
-        .NotHaveDependencyOn(ApiNamespace)
-        .GetResult();
-
-    Assert.True(result.IsSuccessful,
-        $"Domain layer should not depend on other layers. Violations: {string.Join(", ", result.FailingTypeNames ?? [])}");
+    DomainLayerRules.ShouldNotDependOnOtherLayers();
 }
 
 [Fact]
-public void Application_ShouldOnlyDependOn_Domain()
+public void Application_ShouldOnlyDependOnDomain()
 {
-    var result = Types.InAssembly(ApplicationAssembly)
-        .Should()
-        .NotHaveDependencyOn(InfrastructureNamespace)
-        .And()
-        .NotHaveDependencyOn(ApiNamespace)
-        .GetResult();
-
-    Assert.True(result.IsSuccessful,
-        $"Application layer should not depend on Infrastructure or API. Violations: {string.Join(", ", result.FailingTypeNames ?? [])}");
+    ApplicationLayerRules.ShouldOnlyDependOnDomain();
 }
 
 [Fact]
-public void Api_ShouldNotHaveDependencyOn_Application()
+public void Api_ShouldNotReferenceApplication()
 {
-    var result = Types.InAssembly(ApiAssembly)
-        .Should()
-        .NotHaveDependencyOn(ApplicationNamespace)
-        .GetResult();
-
-    Assert.True(result.IsSuccessful,
-        $"API layer should not depend on Application layer. Violations: {string.Join(", ", result.FailingTypeNames ?? [])}");
+    ApiLayerRules.ShouldNotReferenceApplication();
 }
 ```
 
-See [netarchtest-rules reference](netarchtest-rules.md).
+See [archunit-rules reference](archunit-rules.md).
 
 ---
 
@@ -477,3 +453,4 @@ See [netarchtest-rules reference](netarchtest-rules.md).
 
 - [Clean Architecture CQRS Skill](../SKILL.md): Complete project setup
 - [Convention-Based DI](./convention-based-di.md): Handler registration
+- [CQRS Without MediatR](./cqrs-without-mediatr.md): Why avoid MediatR

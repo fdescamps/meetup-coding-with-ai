@@ -1,6 +1,6 @@
 ---
 name: clean-architecture-dotnet
-description: Use when setting up Clean Architecture in .NET with DDD, CQRS handlers, and compile-time architecture validation
+description: Use when setting up Clean Architecture in .NET with DDD, CQRS handlers without MediatR, and compile-time architecture validation
 ---
 
 # Clean Architecture CQRS
@@ -24,6 +24,7 @@ Complete guide for implementing Clean Architecture with Domain-Driven Design and
 **Don't use when:**
 - Simple CRUD prototypes without complex business logic (overkill)
 - Team unfamiliar with Clean Architecture/DDD patterns (training needed first)
+- Project already using MediatR successfully (no need to change)
 - Rapid prototyping where architecture validation slows iteration
 
 ## Core Pattern
@@ -31,7 +32,7 @@ Complete guide for implementing Clean Architecture with Domain-Driven Design and
 **Convention-based CQRS handlers** with explicit interfaces and auto-discovery:
 
 ```csharp
-// 1. Define explicit handler interfaces (Application/Shared/)
+// 1. Define explicit handler interfaces (Application/_Contracts/)
 public interface ICommandHandler<in TCommand, TResult>
 {
     Task<TResult> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
@@ -116,7 +117,7 @@ Based on:
 ### Handler Interfaces
 
 ```csharp
-// Application/Shared/ICommandHandler.cs
+// Application/_Contracts/ICommandHandler.cs
 
 /// <summary>
 /// Handler for commands that don't return a result (void operations).
@@ -143,27 +144,6 @@ public interface IQueryHandler<in TQuery, TResult>
 }
 ```
 
-### Bus Interfaces
-
-Buses abstract handler dispatch. Defined in Application, implemented in Infrastructure.
-
-```csharp
-// Application/Shared/ICommandBus.cs
-public interface ICommandBus
-{
-    Task PublishAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default);
-    Task<TResult> PublishAsync<TCommand, TResult>(TCommand command, CancellationToken cancellationToken = default);
-}
-
-// Application/Shared/IQueryBus.cs
-public interface IQueryBus
-{
-    Task<TResult> SendAsync<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default);
-}
-```
-
-Implementations in `Infrastructure/CQRS/` resolve handlers from the DI container via `IServiceProvider.GetRequiredService<>()`.
-
 ### Convention-Based Discovery
 
 Infrastructure registers handlers automatically by naming convention:
@@ -172,60 +152,39 @@ Infrastructure registers handlers automatically by naming convention:
 // Infrastructure/DependencyInjection.cs
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Registers a single command or query handler explicitly.
-    /// </summary>
-    public static IServiceCollection AddHandler<THandler>(this IServiceCollection services)
-        where THandler : class
-    {
-        var handlerType = typeof(THandler);
-        var handlerInterfaces = handlerType.GetInterfaces()
-            .Where(i => i.IsGenericType && 
-                   (i.GetGenericTypeDefinition() == typeof(ICommandHandler<>) ||
-                    i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>) ||
-                    i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>)));
-
-        foreach (var @interface in handlerInterfaces)
-            services.AddScoped(@interface, handlerType);
-
-        return services;
-    }
-
-    /// <summary>
-    /// Registers all command and query handlers from the Application assembly.
-    /// </summary>
     public static IServiceCollection AddApplicationHandlers(
         this IServiceCollection services)
     {
         var applicationAssembly = typeof(IApplicationMarker).Assembly;
         
-        var allTypes = applicationAssembly.GetTypes()
-            .Where(t => !t.IsInterface && !t.IsAbstract);
+        // Discover all *CommandHandler classes
+        var commandHandlers = applicationAssembly.GetTypes()
+            .Where(t => t.Name.EndsWith("CommandHandler") && !t.IsInterface && !t.IsAbstract);
             
-        foreach (var type in allTypes)
+        foreach (var handler in commandHandlers)
         {
-            var handlerInterfaces = type.GetInterfaces()
+            var interfaces = handler.GetInterfaces()
                 .Where(i => i.IsGenericType && 
                        (i.GetGenericTypeDefinition() == typeof(ICommandHandler<>) ||
-                        i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>) ||
-                        i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>)));
+                        i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>)));
                         
-            foreach (var @interface in handlerInterfaces)
-                services.AddScoped(@interface, type);
+            foreach (var @interface in interfaces)
+                services.AddScoped(@interface, handler);
         }
         
-        return services;
-    }
-
-    /// <summary>
-    /// Registers Infrastructure services (CQRS buses only).
-    /// Does NOT register handlers — use AddHandler&lt;T&gt;() or AddApplicationHandlers() separately.
-    /// </summary>
-    public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services)
-    {
-        services.AddScoped<ICommandBus, CommandBus>();
-        services.AddScoped<IQueryBus, QueryBus>();
+        // Discover all *QueryHandler classes
+        var queryHandlers = applicationAssembly.GetTypes()
+            .Where(t => t.Name.EndsWith("QueryHandler") && !t.IsInterface && !t.IsAbstract);
+            
+        foreach (var handler in queryHandlers)
+        {
+            var interfaces = handler.GetInterfaces()
+                .Where(i => i.IsGenericType && 
+                       i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>));
+                        
+            foreach (var @interface in interfaces)
+                services.AddScoped(@interface, handler);
+        }
         
         return services;
     }
@@ -252,7 +211,7 @@ Examples:
 ### Command (Write Operation)
 
 ```csharp
-// Application/Features/PlaceOrder/PlaceOrderCommand.cs
+// Application/features/PlaceOrder/PlaceOrderCommand.cs
 public sealed record PlaceOrderCommand(
     OrderId OrderId,
     CustomerId CustomerId,
@@ -267,7 +226,7 @@ public sealed record OrderLineDto(
     decimal UnitPrice
 );
 
-// Application/Features/PlaceOrder/PlaceOrderCommandHandler.cs
+// Application/features/PlaceOrder/PlaceOrderCommandHandler.cs
 public sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderCommand, OrderId>
 {
     private readonly IOrderRepository _orderRepository;
@@ -315,10 +274,10 @@ public sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderCommand
 ### Query (Read Operation)
 
 ```csharp
-// Application/Features/GetOrder/GetOrderQuery.cs
+// Application/features/GetOrder/GetOrderQuery.cs
 public sealed record GetOrderQuery(OrderId OrderId);
 
-// Application/Features/GetOrder/OrderViewModel.cs
+// Application/features/GetOrder/OrderViewModel.cs
 public sealed record OrderViewModel(
     Guid OrderId,
     Guid CustomerId,
@@ -341,7 +300,7 @@ public sealed record AddressViewModel(
     string Country
 );
 
-// Application/Features/GetOrder/GetOrderQueryHandler.cs
+// Application/features/GetOrder/GetOrderQueryHandler.cs
 public sealed class GetOrderQueryHandler : IQueryHandler<GetOrderQuery, OrderViewModel>
 {
     private readonly IOrderRepository _orderRepository;
@@ -589,10 +548,7 @@ Domain/
 ```
 Application/
   IApplicationMarker.cs
-  Shared/
-    ICommandHandler.cs
-    IQueryHandler.cs
-  Features/
+  features/
     PlaceOrder/
       PlaceOrderCommand.cs
       PlaceOrderCommandHandler.cs
@@ -670,7 +626,7 @@ public async Task WhenPlacingValidOrder_ShouldCreateConfirmedOrder()
 }
 ```
 
-**REQUIRED SUB-SKILL:** Use outside-in-tdd for complete handler testing strategy.
+**REQUIRED SUB-SKILL:** Use application-layer-testing for complete handler testing strategy.
 
 ### ArchitectureTests
 
@@ -727,6 +683,7 @@ dotnet test --filter "FullyQualifiedName~IntegrationTests"
 ## References
 
 - **[layer-responsibilities.md](references/layer-responsibilities.md)**: Detailed responsibilities for each layer
+- **[cqrs-without-mediatr.md](references/cqrs-without-mediatr.md)**: Why avoid MediatR, alternatives, benefits
 - **[convention-based-di.md](references/convention-based-di.md)**: Assembly scanning strategies
 
 ---
@@ -758,5 +715,5 @@ dotnet test --filter "FullyQualifiedName~IntegrationTests"
 
 ## Related Skills
 
-- **REQUIRED SUB-SKILL:** outside-in-tdd - How to test Application and Domain layers with sociable testing
+- **REQUIRED SUB-SKILL:** application-layer-testing - How to test Application handlers with sociable testing
 
