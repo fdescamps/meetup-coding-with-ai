@@ -381,3 +381,95 @@ await Assert.ThrowsAsync<DomainException>(
 3. **Maintainable**: Tests focus on behavior, not implementation
 4. **Refactoring-safe**: Changes to Domain structure don't break tests
 5. **Clear intent**: Tests show how Domain and Application collaborate
+
+## Example 3: Domain Logic Test (Pure — No Mocks)
+
+### Domain: Eligibility Policy
+
+```csharp
+namespace MonAssurance.Domain.Eligibility;
+
+public sealed class EligibilityPolicy
+{
+    public EligibilityResult Evaluate(DriverInfo driver, VehicleInfo vehicle)
+    {
+        if (driver.Age < 18)
+            return EligibilityResult.Rejected("driver_under_minimum_age");
+
+        if (driver.LicenseYears < 2)
+            return EligibilityResult.Rejected("insufficient_license_experience");
+
+        if (vehicle.Age > 15)
+            return EligibilityResult.Rejected("vehicle_too_old");
+
+        return EligibilityResult.Eligible();
+    }
+}
+```
+
+### Test: Domain Policy Tests
+
+```csharp
+namespace MonAssurance.UnitTests.Domain.Eligibility;
+
+public sealed class EligibilityPolicyTests
+{
+    private readonly EligibilityPolicy _policy = new();
+
+    [Fact]
+    public void WhenDriverIsUnder18_ShouldBeIneligible()
+    {
+        var driver = new DriverInfo(Age: 17, LicenseYears: 0);
+        var vehicle = new VehicleInfo(Type: "sedan", Age: 1);
+
+        var result = _policy.Evaluate(driver, vehicle);
+
+        Assert.False(result.IsEligible);
+        Assert.Equal("driver_under_minimum_age", result.RejectionReason);
+    }
+
+    [Fact]
+    public void WhenDriverHasInsufficientExperience_ShouldBeIneligible()
+    {
+        var driver = new DriverInfo(Age: 25, LicenseYears: 1);
+        var vehicle = new VehicleInfo(Type: "sedan", Age: 3);
+
+        var result = _policy.Evaluate(driver, vehicle);
+
+        Assert.False(result.IsEligible);
+        Assert.Equal("insufficient_license_experience", result.RejectionReason);
+    }
+
+    [Fact]
+    public void WhenVehicleIsTooOld_ShouldBeIneligible()
+    {
+        var driver = new DriverInfo(Age: 30, LicenseYears: 10);
+        var vehicle = new VehicleInfo(Type: "sedan", Age: 16);
+
+        var result = _policy.Evaluate(driver, vehicle);
+
+        Assert.False(result.IsEligible);
+        Assert.Equal("vehicle_too_old", result.RejectionReason);
+    }
+
+    [Fact]
+    public void WhenAllCriteriaMet_ShouldBeEligible()
+    {
+        var driver = new DriverInfo(Age: 30, LicenseYears: 10);
+        var vehicle = new VehicleInfo(Type: "sedan", Age: 3);
+
+        var result = _policy.Evaluate(driver, vehicle);
+
+        Assert.True(result.IsEligible);
+    }
+}
+```
+
+### Key Differences from Application Tests
+
+| Aspect | Application Test | Domain Test |
+|---|---|---|
+| Dependencies | Mock Infrastructure | None (pure) |
+| Subject | Handler (orchestrator) | Aggregate/VO/Service |
+| Assertions | Infrastructure calls + Domain state | Domain state only |
+| When to use | Orchestration flows | Complex business rules, edge matrices |
