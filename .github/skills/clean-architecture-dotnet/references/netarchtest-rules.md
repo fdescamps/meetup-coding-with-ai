@@ -353,4 +353,4 @@ Clear, actionable feedback → fix immediately.
 ## Related Skills
 
 - [clean-architecture-dotnet](../.github/skills/clean-architecture-dotnet/SKILL.md): Complete project setup with NetArchTest
-- [outside-in-tdd](../.github/skills/outside-in-tdd/SKILL.md): Testing Application and Domain layers
+- [application-layer-testing](../.github/skills/application-layer-testing/SKILL.md): Testing Application handlers

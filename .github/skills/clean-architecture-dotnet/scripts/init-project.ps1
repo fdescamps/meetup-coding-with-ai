@@ -103,7 +103,8 @@ Write-Host "`n📂 Creating directory structure..." -ForegroundColor Yellow
 New-Item -ItemType Directory -Force -Path "src/$ProjectName.Domain/Shared" | Out-Null
 
 # Application
-New-Item -ItemType Directory -Force -Path "src/$ProjectName.Application/features" | Out-Null
+New-Item -ItemType Directory -Force -Path "src/$ProjectName.Application/Shared" | Out-Null
+New-Item -ItemType Directory -Force -Path "src/$ProjectName.Application/Features" | Out-Null
 
 # Infrastructure
 New-Item -ItemType Directory -Force -Path "src/$ProjectName.Infrastructure/Persistence/Repositories" | Out-Null
@@ -145,11 +146,11 @@ public interface IApplicationMarker { }
 "@
 Set-Content -Path "src/$ProjectName.Application/IApplicationMarker.cs" -Value $applicationMarker
 
-# Create CQRS interfaces in features
+# Create CQRS interfaces in Shared
 Write-Host "`n📝 Creating CQRS handler interfaces..." -ForegroundColor Yellow
 
 $commandHandler = @"
-namespace $ProjectName.Application.features;
+namespace $ProjectName.Application.Shared;
 
 /// <summary>
 /// Handler for commands that don't return a result (void operations).
@@ -167,10 +168,10 @@ public interface ICommandHandler<in TCommand, TResult>
     Task<TResult> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
 }
 "@
-Set-Content -Path "src/$ProjectName.Application/features/ICommandHandler.cs" -Value $commandHandler
+Set-Content -Path "src/$ProjectName.Application/Shared/ICommandHandler.cs" -Value $commandHandler
 
 $queryHandler = @"
-namespace $ProjectName.Application.features;
+namespace $ProjectName.Application.Shared;
 
 /// <summary>
 /// Handler for queries (read operations).
@@ -180,7 +181,179 @@ public interface IQueryHandler<in TQuery, TResult>
     Task<TResult> HandleAsync(TQuery query, CancellationToken cancellationToken = default);
 }
 "@
-Set-Content -Path "src/$ProjectName.Application/features/IQueryHandler.cs" -Value $queryHandler
+Set-Content -Path "src/$ProjectName.Application/Shared/IQueryHandler.cs" -Value $queryHandler
+
+# Create Bus interfaces
+Write-Host "`n📝 Creating CQRS bus interfaces..." -ForegroundColor Yellow
+
+$commandBus = @"
+namespace $ProjectName.Application.Shared;
+
+/// <summary>
+/// Dispatches commands to their registered handlers.
+/// </summary>
+public interface ICommandBus
+{
+    Task PublishAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default);
+    Task<TResult> PublishAsync<TCommand, TResult>(TCommand command, CancellationToken cancellationToken = default);
+}
+"@
+Set-Content -Path "src/$ProjectName.Application/Shared/ICommandBus.cs" -Value $commandBus
+
+$queryBus = @"
+namespace $ProjectName.Application.Shared;
+
+/// <summary>
+/// Dispatches queries to their registered handlers.
+/// </summary>
+public interface IQueryBus
+{
+    Task<TResult> SendAsync<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default);
+}
+"@
+Set-Content -Path "src/$ProjectName.Application/Shared/IQueryBus.cs" -Value $queryBus
+
+# Create Bus implementations
+Write-Host "`n📝 Creating CQRS bus implementations..." -ForegroundColor Yellow
+
+New-Item -ItemType Directory -Force -Path "src/$ProjectName.Infrastructure/CQRS" | Out-Null
+
+$commandBusImpl = @"
+using Microsoft.Extensions.DependencyInjection;
+using $ProjectName.Application.Shared;
+
+namespace $ProjectName.Infrastructure.CQRS;
+
+/// <summary>
+/// Default implementation of command bus using DI to resolve handlers.
+/// </summary>
+public sealed class CommandBus : ICommandBus
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public CommandBus(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    public async Task PublishAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        var handler = _serviceProvider.GetRequiredService<ICommandHandler<TCommand>>();
+        await handler.HandleAsync(command, cancellationToken);
+    }
+
+    public async Task<TResult> PublishAsync<TCommand, TResult>(TCommand command, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        var handler = _serviceProvider.GetRequiredService<ICommandHandler<TCommand, TResult>>();
+        return await handler.HandleAsync(command, cancellationToken);
+    }
+}
+"@
+Set-Content -Path "src/$ProjectName.Infrastructure/CQRS/CommandBus.cs" -Value $commandBusImpl
+
+$queryBusImpl = @"
+using Microsoft.Extensions.DependencyInjection;
+using $ProjectName.Application.Shared;
+
+namespace $ProjectName.Infrastructure.CQRS;
+
+/// <summary>
+/// Default implementation of query bus using DI to resolve handlers.
+/// </summary>
+public sealed class QueryBus : IQueryBus
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public QueryBus(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    public async Task<TResult> SendAsync<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(query);
+        var handler = _serviceProvider.GetRequiredService<IQueryHandler<TQuery, TResult>>();
+        return await handler.HandleAsync(query, cancellationToken);
+    }
+}
+"@
+Set-Content -Path "src/$ProjectName.Infrastructure/CQRS/QueryBus.cs" -Value $queryBusImpl
+
+# Create DependencyInjection.cs
+Write-Host "`n📝 Creating DependencyInjection.cs..." -ForegroundColor Yellow
+
+$dependencyInjection = @"
+using Microsoft.Extensions.DependencyInjection;
+using $ProjectName.Application.Shared;
+using $ProjectName.Application;
+using $ProjectName.Infrastructure.CQRS;
+
+namespace $ProjectName.Infrastructure;
+
+public static class DependencyInjection
+{
+    /// <summary>
+    /// Registers a single command or query handler.
+    /// </summary>
+    public static IServiceCollection AddHandler<THandler>(this IServiceCollection services)
+        where THandler : class
+    {
+        var handlerType = typeof(THandler);
+        var handlerInterfaces = handlerType.GetInterfaces()
+            .Where(i => i.IsGenericType &&
+                   (i.GetGenericTypeDefinition() == typeof(ICommandHandler<>) ||
+                    i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>) ||
+                    i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>)));
+
+        foreach (var @interface in handlerInterfaces)
+            services.AddScoped(@interface, handlerType);
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers all command and query handlers from the Application assembly.
+    /// </summary>
+    public static IServiceCollection AddApplicationHandlers(
+        this IServiceCollection services)
+    {
+        var applicationAssembly = typeof(IApplicationMarker).Assembly;
+
+        var allTypes = applicationAssembly.GetTypes()
+            .Where(t => !t.IsInterface && !t.IsAbstract);
+
+        foreach (var type in allTypes)
+        {
+            var handlerInterfaces = type.GetInterfaces()
+                .Where(i => i.IsGenericType &&
+                       (i.GetGenericTypeDefinition() == typeof(ICommandHandler<>) ||
+                        i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>) ||
+                        i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>)));
+
+            foreach (var @interface in handlerInterfaces)
+                services.AddScoped(@interface, type);
+        }
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers Infrastructure services (CQRS buses).
+    /// Does NOT register handlers - use AddHandler or AddApplicationHandlers separately.
+    /// </summary>
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services)
+    {
+        services.AddScoped<ICommandBus, CommandBus>();
+        services.AddScoped<IQueryBus, QueryBus>();
+
+        return services;
+    }
+}
+"@
+Set-Content -Path "src/$ProjectName.Infrastructure/DependencyInjection.cs" -Value $dependencyInjection
 
 # Create marker interfaces for Infrastructure and API
 $infrastructureMarker = @"
@@ -225,7 +398,7 @@ dotnet build
 Write-Host "`n✅ Clean Architecture CQRS project initialized successfully!" -ForegroundColor Green
 Write-Host "`nNext steps:"
 Write-Host "  1. Review src/$ProjectName.Domain for business logic"
-Write-Host "  2. Create Commands/Queries in src/$ProjectName.Application/features/"
+Write-Host "  2. Create Commands/Queries in src/$ProjectName.Application/Features/"
 Write-Host "  3. Implement handlers with *CommandHandler/*QueryHandler suffix"
 Write-Host "  4. Run architecture tests: dotnet test --filter 'FullyQualifiedName~IntegrationTests'"
 Write-Host "`n📚 See .github/skills/clean-architecture-dotnet/SKILL.md for complete guide"
