@@ -16,9 +16,9 @@ This testing strategy follows Martin Fowler's **sociable testing** approach:
 - Located in: `tests/[Project].UnitTests/Application/`
 
 ### Domain Layer Tests (when needed)
-- Test complex domain logic that needs isolated validation
-- Test specifications, complex calculations, or critical invariants
-- Most Domain logic is already tested through Application tests
+- Test **domain services** (policies, specifications, calculators) in isolation
+- Aggregates, value objects, and entities are **not** tested directly — they are exercised through the domain service or through Application tests
+- Most Domain logic is already covered through Application tests
 - Located in: `tests/[Project].UnitTests/Domain/`
 
 ### Integration Tests (full stack)
@@ -30,13 +30,27 @@ This testing strategy follows Martin Fowler's **sociable testing** approach:
 | Signal | Route to |
 |---|---|
 | Orchestration (load/save/publish/map) | Application test |
-| Complex business rules with edge-case matrices | Domain test |
-| Aggregate invariants across state transitions | Domain test |
-| Value object validation with boundary conditions | Domain test |
-| Domain service with non-trivial policy logic | Domain test |
+| Complex business rules with edge-case matrices | Domain test (on domain service) |
+| Domain service with non-trivial policy logic | Domain test (on domain service) |
+| Aggregate / VO / entity logic | Application test — exercised via handler, not tested directly |
 | Simple rule adequately covered by handler test | Don't duplicate — Application test is enough |
 
 **Default:** Start with Application test. Add Domain test only when complexity warrants it.
+
+## Decision Framework: 3 Questions
+
+Ask yourself these 3 questions to route a test to the right layer:
+
+**1. Am I testing a pure business rule?**
+→ **Domain test** — isolated, no mocks, state-based assertions on a **domain service** (e.g. `EligibilityPolicy`). Aggregates, VOs, and entities are not tested directly.
+
+**2. Am I testing a use case?**
+→ **Sociable Application test**
+- Real Domain objects
+- External ports (repositories, services) faked/in-memory
+
+**3. Am I testing a technical integration?**
+→ **Integration test** — full stack, real infrastructure (Testcontainers, HTTP client).
 
 ## Testing Rules
 
