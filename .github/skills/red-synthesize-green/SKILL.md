@@ -12,7 +12,7 @@ description: Use when following TDD to implement any feature or fix — defines 
 - **Traditional (3 steps):** RED → green (dirty) → Refactor
 - **AI-Optimized (2 steps):** RED (behavior failure) → SYNTHESIZE GREEN (clean synthesis)
 
-Architectural guidance is optional framing between steps.
+Architectural guidance is **mandatory** between steps.
 
 **Hard rule:** No implementation code before RED is a clean behavior failure.
 
@@ -26,7 +26,12 @@ Write the failing test. Run it.
 
 **Programming by Wishful Thinking:** When your test won't compile, you're discovering the API you need. Stub just enough to compile, then confirm the test fails on behavior.
 
-## Between Steps: Architectural Guidance (Optional)
+## Between Steps: Architectural Guidance (MANDATORY)
+
+**Hard rule:** This step is not skippable. Do not proceed to SYNTHESIZE GREEN without completing it.
+
+**Developer must review and explicitly validate the test before continuing.**
+AI pauses here and waits for developer confirmation that the test correctly captures the intended behavior.
 
 Orient design before synthesis:
 
@@ -58,6 +63,8 @@ Implement complete, clean, production-ready solution in one shot.
 - Implementation code before RED is a behavior failure
 - Compilation errors treated as RED
 - Skipping RED entirely
+- Skipping the Between Steps architectural guidance
+- Proceeding to SYNTHESIZE GREEN without developer test validation
 - Refining code after SYNTHESIZE GREEN instead of revising RED
 
 **Any of these mean:** Delete code, start over with proper RED.
@@ -67,7 +74,7 @@ Implement complete, clean, production-ready solution in one shot.
 | Phase | What | Success Criteria |
 |---|---|---|
 | **RED** | Write test, stub until compiles, run | Test fails on **behavior** (assertion), not compilation |
-| **Guidance** (optional) | Orient architectural approach | Design direction clear |
+| **Guidance** (**MANDATORY**) | Orient architectural approach + **developer validates test** | Design direction clear, developer has confirmed test |
 | **SYNTHESIZE GREEN** | Synthesize complete clean solution | Tests green, architecture respected, production-ready |
 
 ## Integration
