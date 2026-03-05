@@ -1,6 +1,6 @@
 ---
 name: outside-in-tdd
-description: Use when writing unit tests for DDD Clean Architecture layers — covers outside-in testing with Gherkin scenarios, Application handler orchestration tests, Domain logic tests, mocking rules, and mutation policy
+description: Use when writing unit tests for DDD Clean Architecture layers — covers outside-in testing with Gherkin scenarios, Application handler orchestration tests, Domain logic tests, and mocking rules
 ---
 
 # Outside-In DDD Testing
@@ -84,12 +84,6 @@ public void WhenDriverIsUnder18_ShouldBeIneligible()
 - Don't test implementation details — test behavior
 - Don't use FluentAssertions — use xUnit native `Assert.*` (licensing)
 
-## Mutation Policy
-
-0 surviving mutants required for Domain + Application. See [references/mutation-policy.md](references/mutation-policy.md) for workflow.
-
-**Task is not done while mutants survive.** Propose functional tests and wait for validation.
-
 ## Anti-Patterns
 
 - Strategic rules in Application handlers instead of Domain
@@ -119,7 +113,6 @@ tests/[Project].UnitTests/
 | Mocking Domain objects in Application tests | Use real Domain objects, mock only Infrastructure |
 | Writing Domain objects before RED test | Let design emerge from test failures |
 | Treating compilation errors as RED | Stub to compile, then confirm behavior failure |
-| Accepting surviving mutants | Propose functional tests, validate, implement, rerun |
 | Skipping Gherkin ("too small") | Even small features benefit from behavior-first thinking |
 
 ## References & Templates
@@ -127,7 +120,6 @@ tests/[Project].UnitTests/
 - [references/testing-strategy.md](references/testing-strategy.md) — sociable vs solitary philosophy
 - [references/cqrs-patterns.md](references/cqrs-patterns.md) — handler structure, commands vs queries
 - [references/test-examples.md](references/test-examples.md) — complete code examples (Application + Domain)
-- [references/mutation-policy.md](references/mutation-policy.md) — Stryker.NET workflow, 0-survivor policy
 - [assets/CommandHandlerTestTemplate.cs](assets/CommandHandlerTestTemplate.cs) — Command handler test starter
 - [assets/QueryHandlerTestTemplate.cs](assets/QueryHandlerTestTemplate.cs) — Query handler test starter
 
