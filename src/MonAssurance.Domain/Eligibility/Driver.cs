@@ -11,7 +11,12 @@ public sealed class Driver
         _licenseYears = licenseYears;
     }
 
-    public int Age(DateOnly today) => 0; // stub
+    public int Age(DateOnly today)
+    {
+        var age = today.Year - _dateOfBirth.Year;
+        if (today < _dateOfBirth.AddYears(age)) age--;
+        return age;
+    }
 
     public bool HasEnoughExperience(int minimumYears) => false; // stub
 }

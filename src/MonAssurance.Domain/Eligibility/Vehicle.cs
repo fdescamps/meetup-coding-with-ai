@@ -11,7 +11,7 @@ public sealed class Vehicle
         _power = power;
     }
 
-    public int MinimumAge() => 99; // stub — intentionally wrong
+    public int MinimumAge() => _type == VehicleType.ElectricScooter ? 16 : 18;
 
     public bool IsHighPowerMotorcycle() => false; // stub
 }

@@ -4,6 +4,9 @@ public sealed class EligibilityPolicy
 {
     public EligibilityResult Evaluate(Driver driver, Vehicle vehicle, DateOnly today)
     {
-        return EligibilityResult.Refused("not implemented"); // stub
+        if (driver.Age(today) < vehicle.MinimumAge())
+            return EligibilityResult.Refused("Conducteur trop jeune pour ce véhicule");
+
+        return EligibilityResult.Accepted();
     }
 }
