@@ -18,5 +18,5 @@ public sealed class Driver
         return age;
     }
 
-    public bool HasEnoughExperience(int minimumYears) => false; // stub
+    public bool HasEnoughExperience(int minimumYears) => _licenseYears >= minimumYears;
 }

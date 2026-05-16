@@ -7,6 +7,9 @@ public sealed class EligibilityPolicy
         if (driver.Age(today) < vehicle.MinimumAge())
             return EligibilityResult.Refused("Conducteur trop jeune pour ce véhicule");
 
+        if (vehicle.IsHighPowerMotorcycle() && !driver.HasEnoughExperience(5))
+            return EligibilityResult.Refused("Expérience insuffisante pour la puissance");
+
         return EligibilityResult.Accepted();
     }
 }

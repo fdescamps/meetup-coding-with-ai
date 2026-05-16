@@ -95,4 +95,52 @@ public class CheckEligibilityQueryHandlerTests
         Assert.True(result.IsEligible);
         Assert.Null(result.RejectionReason);
     }
+
+    [Fact]
+    public void Handle_WhenMotorcycleIsHighPowerAndDriverHas4YearsLicense_ReturnsRefused()
+    {
+        var handler = BuildHandler(Today);
+        var query = new CheckEligibilityQuery(
+            DateOfBirth: Today.AddYears(-25),
+            VehicleType: VehicleType.Motorcycle,
+            Power: 101,
+            LicenseYears: 4);
+
+        var result = handler.Handle(query);
+
+        Assert.False(result.IsEligible);
+        Assert.Equal("Expérience insuffisante pour la puissance", result.RejectionReason);
+    }
+
+    [Fact]
+    public void Handle_WhenMotorcycleIsHighPowerAndDriverHas5YearsLicense_ReturnsEligible()
+    {
+        var handler = BuildHandler(Today);
+        var query = new CheckEligibilityQuery(
+            DateOfBirth: Today.AddYears(-25),
+            VehicleType: VehicleType.Motorcycle,
+            Power: 101,
+            LicenseYears: 5);
+
+        var result = handler.Handle(query);
+
+        Assert.True(result.IsEligible);
+        Assert.Null(result.RejectionReason);
+    }
+
+    [Fact]
+    public void Handle_WhenMotorcycleIsExactly100HpAndDriverHas4YearsLicense_ReturnsEligible()
+    {
+        var handler = BuildHandler(Today);
+        var query = new CheckEligibilityQuery(
+            DateOfBirth: Today.AddYears(-25),
+            VehicleType: VehicleType.Motorcycle,
+            Power: 100,
+            LicenseYears: 4);
+
+        var result = handler.Handle(query);
+
+        Assert.True(result.IsEligible);
+        Assert.Null(result.RejectionReason);
+    }
 }
