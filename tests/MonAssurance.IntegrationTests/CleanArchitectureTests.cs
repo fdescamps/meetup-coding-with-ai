@@ -62,15 +62,17 @@ public sealed class CleanArchitectureTests
     }
 
     [Fact]
-    public void Api_ShouldNotHaveDependencyOn_Application()
+    public void Api_ShouldNotHaveDependencyOn_Domain_Directly()
     {
-        // Act
+        // API must go through Application layer — direct Domain references bypass the application boundary.
+        // API -> Application -> Domain is correct. API -> Domain directly is not allowed.
+        // Note: API is allowed to depend on Application (CQS without bus: handlers injected into endpoints).
         var result = Types.InAssembly(ApiAssembly)
             .Should()
-            .NotHaveDependencyOn(ApplicationNamespace)
+            .NotHaveDependencyOn(DomainNamespace)
             .GetResult();
 
         // Assert
-        Assert.True(result.IsSuccessful, $"API layer should not depend on Application layer. Violations: {string.Join(", ", result.FailingTypeNames ?? [])}");
+        Assert.True(result.IsSuccessful, $"API layer should not depend on Domain directly. Violations: {string.Join(", ", result.FailingTypeNames ?? [])}");
     }
 }

@@ -1,3 +1,4 @@
+using MonAssurance.Api.Eligibility;
 using MonAssurance.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +34,8 @@ app.UseHttpsRedirection();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
     .WithName("HealthCheck")
     .Produces(StatusCodes.Status200OK);
+
+app.MapEligibilityEndpoints();
 
 app.Run();
 
