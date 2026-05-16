@@ -30,6 +30,23 @@ Each entry must include at minimum:
 
 Omit **References** only when no external source was consulted.
 
+## Journal writing style
+
+Write journal entries in compressed, caveman-inspired prose. Rules:
+
+- Drop articles (a/an/the), filler (just/basically/actually), hedging, pleasantries
+- Fragments OK — `"Skill mandated CQS. No deliberation."` not `"The skill clearly mandated the use of CQS, so there was no need for deliberation."`
+- Short synonyms: `fix` not `implement a solution for`, `removed` not `has been removed`
+- Technical terms exact — never abbreviate class names, method names, skill names, or error strings
+- Pattern: `[thing] [action] [reason]. [next step if any].`
+- Code blocks unchanged — full syntax always
+
+Suspend compressed style only for: security warnings, destructive operation confirmations, multi-step sequences where order ambiguity risks misread.
+
+## Journal append rule
+
+**New entries are always added at the END of the journal file.** Never insert entries before existing sections, between existing choices, or at the top. The journal is a chronological log — the order of entries must reflect the order decisions were made.
+
 ## Anti-patterns to avoid
 
 - **Spec changed without a journal update** — any modification to the spec file must have a corresponding journal entry in the same working session.
