@@ -270,4 +270,16 @@ Spec approuvée sans réserve.
 | 1 | Aucun test Motorcycle 17yo refusé — règle 1 couvre Car ET Motorcycle | Ajout `Handle_WhenDriverIs17AndHasMotorcycle_ReturnsRefused` dans Task 4 |
 | 2 | Task 4 Step 2 cosmétique — tests ajoutés après implémentation complète → pas de vrai RED | Suppression du faux RED step ; tests vont directement en GREEN ; description clarifiée |
 
+---
+
+## Exécution — subagent-driven-development
+
+- **Trigger**: plan approuvé. Skill `writing-plans` → skill `subagent-driven-development`.
+- **Mode**: skill-guided
+
+| Task | Statut | Commit | Notes |
+|------|--------|--------|-------|
+| 0 — setup `FakeTimeProvider` | ✅ DONE | `a66fd35` | Package v10.6.0 ajouté, build OK |
+| 1 — premier test acceptance (RED) | ✅ DONE | `4fcae4c` | Compile error confirmé — `CheckEligibilityQueryHandler` not found |
+
 
