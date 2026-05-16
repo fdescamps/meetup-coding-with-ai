@@ -369,3 +369,32 @@ Architecture tests ne passent pas par une phase RED classique : ils valident une
 Gardes vérifiées : pas de `Microsoft.AspNetCore`, `Microsoft.Extensions.DependencyInjection`, `Microsoft.EntityFrameworkCore`, `System.Net.Http`, ni aucun autre layer MonAssurance.
 
 **Résultat final :** `17 passed` (UnitTests) + `10 passed` (IntegrationTests) = **27 tests, 0 failures**.
+
+---
+
+## Code Review — agent `software-engineer-reviewer`
+
+- **Trigger** : plan complet, toutes tasks GREEN. Dispatch `software-engineer-reviewer` sur `3cef639` (origin/main) → `15481ad` (HEAD avant review).
+- **Verdict initial** : `changes_requested`
+- **Verdict final** : `approved` (après correction du lexique)
+
+### Trouvailles
+
+| Sévérité | Localisation | Finding |
+|----------|-------------|---------|
+| 🟠 Important | `EligibilityPolicy.cs` | **Hard rule lexique violée** — 3 termes FR apparus dans le code sans mise à jour de la table FR→EN : `conducteur`, `véhicule`, `puissance` |
+| 🟡 Minor | `Program.cs:14` | `SwaggerDoc("v1")` mais `Version = "v3"` — copier-coller |
+| 🟡 Minor | `DependencyInjection.cs` | `ICommandBus`/`IQueryBus` enregistrés mais jamais utilisés — mort code contredisant la décision CQS sans bus |
+| 🟡 Minor | `EligibilityResult.cs:17` | `_reason!` null-forgiving — safe today, fragile si 3e factory ajouté |
+| 🟡 Minor | `EligibilityPolicyTests.cs` | Test `101Hp+4years` dupliqué dans 2 groupes boundary — redondant |
+| 🟡 Minor | `Program.cs` | `TimeProvider.System` enregistré dans API au lieu de `AddInfrastructure()` — contrat implicite |
+| 🟡 Minor | `EligibilityEndpointsTests.cs` | Seul le happy path testé E2E — pas de test chemin refus (`isEligible: false`) |
+| 🟡 Minor | `Driver.cs` | `licenseYears` accepte valeurs négatives sans garde |
+
+### Correction appliquée — `96a97d8`
+
+Lexique mis à jour : `conducteur → driver`, `véhicule → vehicle`, `puissance → power`, `motif de refus → rejection reason`, `trottinette électrique → electric scooter`, `expérience insuffisante → insufficient experience`.
+
+6 entrées ajoutées dans `.github/instructions/business-lexicon.instructions.md`. Les 7 findings mineurs sont notés pour backlog.
+
+**Verdict final : approved.**
