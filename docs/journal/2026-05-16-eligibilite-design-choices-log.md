@@ -286,6 +286,16 @@ Spec approuvée sans réserve.
 | 4 — boundary âge (Car/Motorcycle 17yo, ElectricScooter 15yo/16yo) | ✅ DONE | `5683f6a` | `5 passed, 0 failed` |
 | 5 — règle moto puissante (RED→GREEN) | ✅ DONE | `ae78bd0` | RED: `7 passed, 1 failed` → GREEN: `8 passed, 0 failed` |
 
+### Task 5 — pourquoi 7 passed / 1 failed au RED ?
+
+Step 1 ajoute 3 tests. Step 2 lance les tests avant implémentation.
+
+- `Handle_WhenMotorcycleIsHighPowerAndDriverHas4YearsLicense_ReturnsRefused` → **FAILED** : stub `IsHighPowerMotorcycle()` retourne `false` → policy retourne `Accepted()` → assertion `Assert.False(result.IsEligible)` échoue. RED confirmé.
+- `Handle_WhenMotorcycleIsHighPowerAndDriverHas5YearsLicense_ReturnsEligible` → **PASSED** par accident : stub retourne `Accepted()` et le test attendait `IsEligible = true`. Mauvaise raison, bon résultat.
+- `Handle_WhenMotorcycleIsExactly100HpAndDriverHas4YearsLicense_ReturnsEligible` → **PASSED** par accident : même situation, stub accepte tout.
+
+Total : 5 tests existants (Tasks 1-4) + 2 accidents = 7 passed, 1 genuine failure.
+
 ### Driver.Age() — avant / après
 
 Stub → implémentation réelle. Formule : années civiles complètes. Si anniversaire pas encore passé cette année, soustrait 1.
