@@ -290,6 +290,7 @@ Spec approuvée sans réserve.
 | 8 — DI registration | ✅ DONE | `5bc4c12` | `Build succeeded. 0 Error(s)` — `EligibilityPolicy`, `CheckEligibilityQueryHandler`, `TimeProvider.System` |
 | 10 — test integration POST /eligibility [RED] | 🔴 RED | `8b757a0` | `Expected: OK — Actual: NotFound` — endpoint absent, test commit avant implémentation |
 | 9+10 — endpoint GREEN + fix archi test | ✅ DONE | `49a1d45` | `9 passed, 0 failed` — `EligibilityEndpoints.cs` + règle architecture corrigée |
+| 11 — architecture test Domain no framework deps | ✅ DONE | `7788e00` | `10 passed, 0 failed` — `DomainArchitectureTests.cs` |
 
 
 ### Task 4 - Driver.Age() — avant / après
@@ -360,3 +361,11 @@ Session précédente avait Task 9 (endpoint) avant Task 10 (test). Utilisateur a
 Test préexistant `Api_ShouldNotHaveDependencyOn_Application` supposait un design CQRS avec mediator (où l'API n'importe jamais les handlers). Notre design : CQS sans bus = handlers injectés directement dans les endpoints. L'API référence `CheckEligibilityQueryHandler` par construction.
 
 Règle incorrecte. Règle correcte : API ne doit pas dépendre du **Domain directement** (doit passer par Application). API → Application → Domain est la chaîne normale. Test renommé `Api_ShouldNotHaveDependencyOn_Domain_Directly`.
+
+### Task 11 — architecture test Domain sans dépendances framework
+
+Architecture tests ne passent pas par une phase RED classique : ils valident une invariante existante. Domain est déjà pur depuis Task 2 (skeleton). Test écrit, run immédiatement GREEN.
+
+Gardes vérifiées : pas de `Microsoft.AspNetCore`, `Microsoft.Extensions.DependencyInjection`, `Microsoft.EntityFrameworkCore`, `System.Net.Http`, ni aucun autre layer MonAssurance.
+
+**Résultat final :** `17 passed` (UnitTests) + `10 passed` (IntegrationTests) = **27 tests, 0 failures**.
