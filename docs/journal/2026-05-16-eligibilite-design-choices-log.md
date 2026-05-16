@@ -277,9 +277,10 @@ Spec approuvée sans réserve.
 - **Trigger**: plan approuvé. Skill `writing-plans` → skill `subagent-driven-development`.
 - **Mode**: skill-guided
 
-| Task | Statut | Commit | Notes |
-|------|--------|--------|-------|
-| 0 — setup `FakeTimeProvider` | ✅ DONE | `a66fd35` | Package v10.6.0 ajouté, build OK |
-| 1 — premier test acceptance (RED) | ✅ DONE | `4fcae4c` | Compile error confirmé — `CheckEligibilityQueryHandler` not found |
+| Task | Statut | Commit | Résultat compilation/test |
+|------|--------|--------|--------------------------|
+| 0 — setup `FakeTimeProvider` | ✅ DONE | `a66fd35` | `Build succeeded. 0 Error(s)` — package v10.6.0 |
+| 1 — premier test acceptance (RED) | ✅ DONE | `4fcae4c` | `CS0234: The type or namespace name 'CheckEligibilityQueryHandler' could not be found` — compile error confirmé |
+| 2 — Domain + Application skeleton | ✅ DONE | `387c79d` | `Assert.True() Failure — Expected: True / Actual: False` — compilation OK, assertion RED confirmé |
 
 
