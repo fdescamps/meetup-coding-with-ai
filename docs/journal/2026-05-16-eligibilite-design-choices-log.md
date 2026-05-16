@@ -14,6 +14,7 @@ Les points suivants ont été appliqués sans délibération : ils découlent di
 - **Nommage `*QueryHandler` / `*Query` / `*ViewModel`** — conséquence naturelle de la convention CQS ; rend explicite la nature lecture vs écriture de chaque cas d'usage
 - **Object Calisthenics (9 règles)** — instruction projet `.github/instructions/object-calisthenics.instructions.md` présente dès le départ (`applyTo: **/*.{cs,ts,java}`). Non chargée par l'assistant en début de session — l'utilisateur a dû la rappeler explicitement. Conséquence : `Driver` et `Vehicle` sont des classes comportementales (pas des records), `EligibilityResult` utilise `Match<T>` (voir Choix 4)
 - **Skills chargés :** `clean-architecture-dotnet`, `clean-architecture-testing`, `outside-in-tdd`
+- **Instruction manquée :** `object-calisthenics.instructions.md` — présente dans le projet, non chargée en début de session
 
 ---
 
@@ -223,3 +224,34 @@ Le skill pose : *"Extract a Domain test ONLY when a business rule has a large ed
 - Tests Domain sur `EligibilityPolicy` (critère rempli)
 - Tests Application via `CheckEligibilityQueryHandler` + `FakeTimeProvider` (scénarios représentatifs d'orchestration)
 - `Driver` et `Vehicle` non testés isolément — couverts par les tests d'`EligibilityPolicy`
+
+---
+
+## Revue de spec — `spec-document-reviewer` (subagent)
+
+**Artefact reviewé :** `docs/superpowers/specs/2026-05-16-eligibilite-design.md`  
+**Agent :** subagent `spec-document-reviewer` (skill `brainstorming` étape 7)  
+**Itérations :** 2 (1 × CHANGES_REQUESTED → corrections → 1 × APPROVED)
+
+### Itération 1 — CHANGES_REQUESTED
+
+Le reviewer a identifié un problème réel : la section `### Calcul de DateOfBirth dans les tests` utilisait `new DateOnly(2026, 5, 16)` (date du jour de la session) au lieu de `new DateOnly(2026, 1, 1)` (date de référence du `Contexte` Gherkin). Cette incohérence aurait propagé une date erronée dans tous les tests qui copient ce snippet.
+
+Les 3 autres points soulevés (définition de `CheckEligibilityQuery`, convention null sur `IsHighPowerMotorcycle()`, formule `Driver.Age()`) étaient déjà présents dans la spec — le reviewer les avait manqués lors du premier passage.
+
+### Correction appliquée
+
+Date remplacée dans le snippet de test :
+```csharp
+// Avant
+var today = new DateOnly(2026, 5, 16);
+
+// Après
+var today = new DateOnly(2026, 1, 1); // date injectée via FakeTimeProvider (= Contexte Gherkin)
+```
+
+### Itération 2 — APPROVED
+
+Spec approuvée sans réserve.
+
+
