@@ -285,18 +285,10 @@ Spec approuvée sans réserve.
 | 3 — règle âge minimum (GREEN) | ✅ DONE | `bc6cabd` | `1 passed, 0 failed` |
 | 4 — boundary âge (Car/Motorcycle 17yo, ElectricScooter 15yo/16yo) | ✅ DONE | `5683f6a` | `5 passed, 0 failed` |
 | 5 — règle moto puissante (RED→GREEN) | ✅ DONE | `ae78bd0` | RED: `7 passed, 1 failed` → GREEN: `8 passed, 0 failed` |
+| 6 — boundary values Domain (`EligibilityPolicy`) | ✅ DONE | `0e1926c` | `17 passed, 0 failed` — 9 nouveaux tests, zéro nouveau code |
 
-### Task 5 — pourquoi 7 passed / 1 failed au RED ?
 
-Step 1 ajoute 3 tests. Step 2 lance les tests avant implémentation.
-
-- `Handle_WhenMotorcycleIsHighPowerAndDriverHas4YearsLicense_ReturnsRefused` → **FAILED** : stub `IsHighPowerMotorcycle()` retourne `false` → policy retourne `Accepted()` → assertion `Assert.False(result.IsEligible)` échoue. RED confirmé.
-- `Handle_WhenMotorcycleIsHighPowerAndDriverHas5YearsLicense_ReturnsEligible` → **PASSED** par accident : stub retourne `Accepted()` et le test attendait `IsEligible = true`. Mauvaise raison, bon résultat.
-- `Handle_WhenMotorcycleIsExactly100HpAndDriverHas4YearsLicense_ReturnsEligible` → **PASSED** par accident : même situation, stub accepte tout.
-
-Total : 5 tests existants (Tasks 1-4) + 2 accidents = 7 passed, 1 genuine failure.
-
-### Driver.Age() — avant / après
+### Task 4 - Driver.Age() — avant / après
 
 Stub → implémentation réelle. Formule : années civiles complètes. Si anniversaire pas encore passé cette année, soustrait 1.
 
@@ -315,4 +307,16 @@ public int Age(DateOnly today)
 
 Exemple boundary : `today = 2026-01-01`, `dob = 2008-01-01` → `age = 18` (anniversaire aujourd'hui = 18 ans révolus → éligible). `dob = 2008-01-02` → `age = 17` → refusé.
 
+### Task 5 — pourquoi 7 passed / 1 failed au RED ?
 
+Step 1 ajoute 3 tests. Step 2 lance les tests avant implémentation.
+
+- `Handle_WhenMotorcycleIsHighPowerAndDriverHas4YearsLicense_ReturnsRefused` → **FAILED** : stub `IsHighPowerMotorcycle()` retourne `false` → policy retourne `Accepted()` → assertion `Assert.False(result.IsEligible)` échoue. RED confirmé.
+- `Handle_WhenMotorcycleIsHighPowerAndDriverHas5YearsLicense_ReturnsEligible` → **PASSED** par accident : stub retourne `Accepted()` et le test attendait `IsEligible = true`. Mauvaise raison, bon résultat.
+- `Handle_WhenMotorcycleIsExactly100HpAndDriverHas4YearsLicense_ReturnsEligible` → **PASSED** par accident : même situation, stub accepte tout.
+
+Total : 5 tests existants (Tasks 1-4) + 2 accidents = 7 passed, 1 genuine failure.
+
+### Task 6 — 17 passed, zéro nouveau code
+
+9 tests boundary directs sur `EligibilityPolicy.Evaluate()` — no `TimeProvider`, objets réels, no doubles. Tous passent immédiatement : domain déjà complet depuis Task 5. Valeur : documente les limites exactes (18yo aujourd'hui = éligible, demain = refusé ; 100hp = OK, 101hp = refusé ; 5 ans permis = OK, 4 ans = refusé). Ces tests utilisent `Match<T>` directement — aucun getter sur `EligibilityResult`.
