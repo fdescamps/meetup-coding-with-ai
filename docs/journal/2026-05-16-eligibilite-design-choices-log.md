@@ -254,4 +254,20 @@ var today = new DateOnly(2026, 1, 1); // date injectée via FakeTimeProvider (= 
 
 Spec approuvée sans réserve.
 
+---
+
+## Revue du plan — `plan-document-reviewer` (subagent)
+
+- **Trigger**: plan écrit via skill `writing-plans`. Review obligatoire avant exécution.
+- **Mode**: skill-guided
+- **Agent**: subagent `plan-document-reviewer` (skill `writing-plans` — loop review)
+- **Itérations**: 2 (1 × CHANGES_REQUESTED → corrections → re-dispatch prévu)
+
+### Problèmes trouvés (itération 1)
+
+| # | Problème | Correction |
+|---|----------|------------|
+| 1 | Aucun test Motorcycle 17yo refusé — règle 1 couvre Car ET Motorcycle | Ajout `Handle_WhenDriverIs17AndHasMotorcycle_ReturnsRefused` dans Task 4 |
+| 2 | Task 4 Step 2 cosmétique — tests ajoutés après implémentation complète → pas de vrai RED | Suppression du faux RED step ; tests vont directement en GREEN ; description clarifiée |
+
 
