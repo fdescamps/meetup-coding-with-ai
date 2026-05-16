@@ -320,3 +320,21 @@ Total : 5 tests existants (Tasks 1-4) + 2 accidents = 7 passed, 1 genuine failur
 ### Task 6 — 17 passed, zéro nouveau code
 
 9 tests boundary directs sur `EligibilityPolicy.Evaluate()` — no `TimeProvider`, objets réels, no doubles. Tous passent immédiatement : domain déjà complet depuis Task 5. Valeur : documente les limites exactes (18yo aujourd'hui = éligible, demain = refusé ; 100hp = OK, 101hp = refusé ; 5 ans permis = OK, 4 ans = refusé). Ces tests utilisent `Match<T>` directement — aucun getter sur `EligibilityResult`.
+
+**Dette TDD identifiée post-implémentation :** tests jamais passés RED → capacité à détecter une régression non prouvée. De plus, le pattern initial `() => true` discardait le retour de `Match<T>` sans `Assert`. Corrigé en commit `e047894` : assertions explicites via capture du résultat et `Assert.True/False`.
+
+```csharp
+// ❌ Avant — valeur discardée, pas d'Assert
+result.Match(onAccepted: () => true, onRefused: _ => throw new Exception("Expected Accepted"));
+
+// ✅ Après — assertion explicite
+var wasAccepted = result.Match(onAccepted: () => true, onRefused: _ => false);
+Assert.True(wasAccepted);
+
+// ✅ Après — cas Refused avec capture de raison
+var (wasAccepted, capturedReason) = result.Match(
+    onAccepted: () => (true, (string?)null),
+    onRefused: r => (false, (string?)r));
+Assert.False(wasAccepted);
+Assert.Equal("Conducteur trop jeune pour ce véhicule", capturedReason);
+```
