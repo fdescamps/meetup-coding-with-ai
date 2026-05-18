@@ -1,0 +1,3 @@
+# This .gitkeep file ensures that the .skraft/sdlc/discuss/ directory structure
+# is tracked by git, even when empty. This allows workflows to persistently
+# write refined stories and planning artifacts to this location.

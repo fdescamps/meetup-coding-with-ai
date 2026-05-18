@@ -1,0 +1,3 @@
+# This .gitkeep file ensures that the .skraft/sdlc/design/ directory structure
+# is tracked by git, even when empty. This allows workflows to persistently
+# write architecture decisions and design artifacts to this location.
