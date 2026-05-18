@@ -98,8 +98,15 @@
     .dot { width: .48rem; height: .48rem; border-radius: 50%; background: rgba(215,255,227,.2); }
     .dot.active { background: var(--accent); box-shadow: 0 0 16px rgba(0,255,65,.45); }
     .hint { color: var(--muted); font-size: .78rem; }
+    .logo-corner { position: absolute; z-index: 2; max-height: clamp(3rem, 12vh, 5rem); width: auto; opacity: .92; }
+    .logo-top-left { top: var(--slide-pad); left: var(--slide-pad); }
+    .logo-top-right { top: var(--slide-pad); right: var(--slide-pad); }
     .reveal { opacity: 0; transform: translateY(14px); transition: opacity 380ms ease, transform 380ms ease; }
     .reveal.in { opacity: 1; transform: translateY(0); }
+    .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; }
+    .cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; }
+    .role { font-size: .68rem; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); margin-bottom: .3rem; }
+    .example { font-style: italic; color: var(--muted); font-size: .88rem; margin-top: .6rem; padding: .5rem .7rem; border-left: 2px solid rgba(0,255,65,.3); }
     @media (max-width: 900px) {
       .slide-content.hero, .slide-content.split { grid-template-columns: 1fr; }
       .sequence-arrow { display: none; }
@@ -128,6 +135,147 @@
 
   <script>
     const slides = [
+      // ─── SLIDE TITLE: Opening ───
+      /*
+        Meetup : https://www.meetup.com/fr-fr/software-craftsmanship-lille/events/312878038/
+        Talk : Coding with AI : Intégrer Copilot sans sacrifier la qualité
+        Date : 20260520
+        Abstract : GitHub Copilot est puissant, mais l'utilisez-vous à 100 % de ses capacités,
+        notamment en TDD et BDD ? Lors de cette session, nous irons au-delà de la simple
+        autocomplétion. Au travers d'un savant mélange de slides et de démos, nous verrons
+        comment l'IA peut assister la phase de développement post-Three Amigos et accélérer
+        l'écriture de vos tests unitaires sans renier sur la qualité de vos tests.
+        François Descamps — AXA France depuis 2015-2016 · Principal Engineer · déploiement
+        de github copilot (750+ licences) · GenAI dans le delivery · NPS 93 · WAU/MAU 93%
+        Sébastien Degodez — passionné DDD & Clean Architecture · AXA France depuis 2023
+        · contributeur Microcks et APM
+      */
+      {
+        kind: 'title',
+        title: 'Coding with AI',
+        subtitle: 'Intégrer Copilot sans sacrifier la qualité',
+        speakers: '<div class="grid-2" style="gap:1.2rem;width:100%;max-width:42rem"><div class="card" style="text-align:center;padding:1rem 1.2rem"><strong style="color:var(--accent-2);font-size:clamp(.9rem,1.5vw,1.1rem)">François Descamps</strong><br><span class="small" style="margin-top:.3rem;display:block">Principal Engineer</span></div><div class="card" style="text-align:center;padding:1rem 1.2rem"><strong style="color:var(--accent-2);font-size:clamp(.9rem,1.5vw,1.1rem)">Sébastien Degodez</strong><br><span class="small" style="margin-top:.3rem;display:block">AI Engineer</span></div></div>',
+        meta: '20 mai 2026 &nbsp;·&nbsp; Meetup Interiale',
+        logoLeft: '<img class="logo-corner logo-top-left" src="assets/logo-axa.svg" alt="AXA" />',
+        logoRight: '<img class="logo-corner logo-top-right" src="assets/github-copilot.png" alt="GitHub Copilot" style="background:transparent;" />'
+      },
+      // ─── SLIDE 1b: Maturité des pratiques ───
+      {
+        kind: 'centered-quote',
+        bgImage: './assets/images/image80.png',
+        bgOpacity: 0.25,
+        quote: '« Nos expérimentations démontrent que la maturité des pratiques d\'ingénierie est le levier essentiel pour limiter les risques induits par l\'IA. »'
+        // Notes: L'IA bouge tous les jours, nous avons mis la conférence à jour déjà plusieurs fois et au final, elle ne ressemble plus à la présentation de novembre donnée dans sa première version à notre Summit tech de Séville.
+        // C'est d'ailleurs un principe chez AXA France — il est crucial d'être à la fois créatif et discipliné dans le déploiement de Copilot et de l'IA en général.
+        // Maîtrise du déterminisme : tests automatisés robustes (unitaires, intégration, bout en bout) pour valider le comportement du code IA de manière déterministe.
+        // Gouvernance des standards : architecture claire, règles strictes (nommage, linters, revues) — empêche l'IA d'introduire de la dette technique ou des patterns incohérents.
+        // Sécurité par conception : contraintes de sécurité dès la conception, scan systématique du code généré.
+        // En résumé : tests automatisés + architecture/standards + sécurité = le filet de sécurité face à l'IA.
+        // Mais avant de se plonger dans la démo, nous allons vérifier que vous connaissez le kung fu, pardon GitHub Copilot.
+      },
+      // ─── SLIDE 1c: Je connais Copilot ───
+      {
+        kind: 'centered-title',
+        title: '"Je connais Copilot"',
+        subtitle: '🤚 Levez la main &mdash; baissez-la quand vous ne savez plus'
+        // Notes: Pour vérifier votre connaissance de copilot, procédons à un petit jeu.
+        // Tout le monde lève la main, vous la gardez tout le temps en l'air et dès que vous ne connaissez pas la réponse, vous baissez la main.
+        // Exemple : Qui est reconnaissant pour l'accueil de Sfeir aujourd'hui ? / Qui connaît la 7ième décimale de Pi ? (π = 3,14159265... c'est 6)
+        // Vraies questions : Qui connaît les 3 différents modes du chat copilot ?
+        // Qui sait ce que sont les "copilot instructions" ?
+        // Qui sait ce qu'est une primitive au sens copilot ?
+        // Qui sait ce qu'est une premium request ?
+        // Qui sait que copilot n'utilise pas toute la taille possible de tokens qu'il peut envoyer à un modèle ?
+        // Qui sait ce qu'est le "Fill in the middle" ?
+        // Qui sait ce qu'est le "0/1/few shots prompting" ?
+        // Qui sait ce qu'est un custom agent ? Et un handoff ?
+        // Qui sait ce qu'est une skill ? Qui sait ce qu'est un subagent ?
+        // Prévoir des stickers.
+        // Quand vous maîtrisez ces choses, vous êtes un Context Engineer (Ingénieur de Contexte).
+        // Le contexte = toutes les informations, instructions, fichiers, règles, historique de chat et exemples que l'agent utilise.
+        // Le contexte est limité en taille : les éléments les plus utiles doivent être sélectionnés.
+        // ASTUCE : Vous voyez "Summary" => vous avez atteint la limite du contexte.
+      },
+      // ─── SLIDE 2a: Les 4 Primitives Copilot ───
+      {
+        kind: 'stack',
+        kicker: 'Copilot · Primitives',
+        title: 'Les 4 Primitives Copilot',
+        content: '<div class="grid4 reveal">'
+          + '<div class="card"><div class="role">Le Cadre</div><h3>📋 Instructions</h3><p>Règles globales permanentes — le <strong>« Comment »</strong>. Définissent le comportement de l\'agent dans tout contexte.</p></div>'
+          + '<div class="card"><div class="role">Les Outils</div><h3>🔧 Skills</h3><p>Capacités modulaires spécialisées — le <strong>« Ce que le système peut faire »</strong>. APIs, CLI, personas métier.</p></div>'
+          + '<div class="card"><div class="role">L\'Entrée Contextuelle</div><h3>💬 Prompts</h3><p>Déclencheur immédiat et contextuel — le <strong>« Ce qu\'il faut faire maintenant »</strong>.</p></div>'
+          + '<div class="card"><div class="role">L\'Orchestrateur</div><h3>🤖 Agents</h3><p>Entité autonome — le <strong>« Qui agit »</strong>. Combine Instructions + Skills + Prompts pour résoudre des tâches complexes.</p></div>'
+          + '</div>'
+        // Notes: Instructions = config haut niveau / "règles du jeu" — directives globales (ex: .github/copilot-instructions.md). Définissent le "Comment".
+        // Skills = capacités modulaires (lire_un_fichier, exécuter_tests, appel_API). Définissent "Ce que" le système peut faire. J'aime les appeler des personas spécialisés.
+        // Prompts = déclencheur immédiat en langage naturel (ex: "Trouve le bug dans cette fonction"). Définissent "Ce qu'il faut faire maintenant".
+        // Agents = entité autonome combinant les trois précédentes. Reçoit un Prompt, utilise ses Skills, respecte les Instructions pour accomplir une tâche complexe. Définit "Qui agit".
+      },
+      // ─── SLIDE 2b: Instructions ───
+      {
+        kind: 'split',
+        kicker: 'Primitive 1',
+        title: 'Instructions',
+        left: '<div class="reveal"><ul class="bullets">'
+          + '<li><b>❓ What is it?</b><ul class="bullets" style="margin-top:.4rem"><li>Fichiers dans la base de code qui enrichissent le prompt IA</li><li>Définissent règles, style de code, outils, comportement de l\'assistant</li></ul></li>'
+          + '<li style="margin-top:.6rem"><b>⚡ Which Priority?</b><ul class="bullets" style="margin-top:.4rem"><li>Priorité sur les prompts utilisateur</li><li>L\'assistant doit les respecter systématiquement</li></ul></li>'
+          + '<li style="margin-top:.6rem"><b>🎯 Purpose?</b><ul class="bullets" style="margin-top:.4rem"><li>Appliquer les règles de sécurité</li><li>Imposer les conventions de formatage</li><li>Garantir des règles de fonctionnement cohérentes</li></ul></li>'
+          + '</ul></div>',
+        right: '<div class="reveal"><img class="img" src="assets/instructions.png" alt="Instructions diagram" style="max-height:min(60vh,480px)" /></div>'
+        // Notes: Ce sont des fichiers présents dans votre base de code pour enrichir le prompt que vous écrivez dans le chat.
+        // Priorité : elles priment sur les prompts utilisateur — l'assistant doit impérativement les suivre.
+        // Éviter le "Code Spaghetti" : fixe des règles dès le départ, Copilot ne proposera pas de solutions "sales" ou obsolètes.
+        // Apprentissage par l'exemple : forces l'IA à coder selon les standards de l'entreprise — tutorat passif pour le junior.
+        // Exemples concrets : bibliothèques (pas Axios → fetch), nommage (I majuscule pour interfaces TS), JSDoc, tests .spec.ts Vitest.
+        // Placement : globales (IDE settings) ou locales (.github/copilot-instructions.md) — la 2ème est partagée via Git.
+        // Pro-tip : les instructions réduisent les hallucinations mais ne remplacent pas la relecture (Code Review).
+      },
+      // ─── SLIDE 2c: Skills ───
+      {
+        kind: 'split',
+        kicker: 'Primitive 2',
+        title: 'Skill',
+        left: '<div class="reveal"><p style="color:var(--accent-2);font-weight:700;margin-bottom:.7rem">Une capacité encapsulée et actionnable</p>'
+          + '<ul class="bullets"><li>🔍 <b>Skill GitHub</b> → rechercher les PRs ouvertes, les issues</li><li>📋 <b>Skill Jira</b> → récupérer les critères d\'acceptation d\'un ticket</li><li>📚 <b>Skill Documentation</b> → interroger le Design System interne</li><li>🧠 <b>Tool Calling</b> : l\'agent décide <em>quand</em> invoquer un skill selon le contexte</li></ul>'
+          + '<blockquote style="margin-top:.8rem;border-left:2px solid rgba(0,255,65,.4);padding-left:.8rem;color:var(--muted)">Copilot passe du générateur de code à un <b>assistant connecté à l\'écosystème</b></blockquote>'
+          + '</div>',
+        right: '<div class="reveal"><img class="img" src="assets/skill.png" alt="Skill diagram" style="max-height:min(55vh,440px)" /></div>'
+        // Notes: Un LLM brut est comme un "cerveau" enfermé dans une boîte. Les Skills sont les mains de ce cerveau.
+        // Ce n'est pas de la génération de texte — c'est l'exécution d'une fonction réelle (requête API REST, commande terminal, BDD).
+        // Tool Calling : l'IA analyse le prompt, détermine si elle a besoin d'infos externes, sélectionne la Skill, formate les paramètres, exécute, ingère le résultat.
+        // En résumé : les Skills transforment Copilot d'un générateur statique en assistant dynamique dans l'écosystème de l'entreprise.
+      },
+      // ─── SLIDE 2d: Fill in the Middle ───
+      {
+        kind: 'split',
+        kicker: 'Concept clé',
+        title: 'Fill in the Middle',
+        left: '<div class="reveal"><p style="color:var(--accent-2);font-weight:700;margin-bottom:.7rem">FIM — Complétion au milieu du fichier</p>'
+          + '<ul class="bullets"><li>Le curseur peut être <b>n\'importe où</b> dans le fichier</li><li>Copilot analyse le code <b>avant ET après</b> la position</li><li><b>Cohérence des variables</b> garantie</li><li><b>Évite les doublons</b> de logique</li><li>Idéal pour le <b>refactoring</b> et l\'insertion de blocs (<code>try/catch</code>, validations…)</li></ul>'
+          + '</div>',
+        right: '<div class="reveal"><pre class="code">function calculerTotal(panier) {\n  const tva = 0.20;\n  <span class="del">// 🔴 Sans FIM → ignorant return</span>\n  <span class="add">// ✅ Avec FIM → Copilot génère :</span>\n  const total = panier.reduce(\n    (acc, item) =&gt; acc + item.prix, 0\n  );\n  return total * (1 + tva);\n}</pre><blockquote style="margin-top:.8rem;border-left:2px solid rgba(0,255,65,.4);padding-left:.8rem;color:var(--muted);font-size:.9rem">Copilot voit le <code>return total</code> <b>après</b> le curseur → génère exactement la bonne variable</blockquote></div>'
+        // Notes: Technique permettant à Copilot de compléter du code non seulement à la fin, mais aussi au milieu ou au début.
+        // D'ordinaire les modèles lisent de haut en bas — sans FIM, il ignore ce qui est juste en dessous du curseur.
+        // Avec FIM : si return total * (1+tva) existe déjà, Copilot comprend qu'il doit créer la variable total au milieu.
+        // Idéal pour insérer des try/catch, conditions if autour de blocs existants.
+      },
+      // ─── SLIDE 2e: 0/1/Few-Shot Prompting ───
+      {
+        kind: 'stack',
+        kicker: 'Concept clé',
+        title: '0 / 1 / Few-Shot Prompting',
+        content: '<p class="lede reveal" style="margin-bottom:.5rem">Mettez des <b>instructions et des exemples</b> dans le contexte pour guider l\'IA</p>'
+          + '<div class="grid-3 reveal">'
+          + '<div class="card"><span class="badge">Zero-Shot</span><h3 style="margin-top:.5rem">Instruction directe</h3><p>Sans exemple — l\'IA s\'appuie sur ses <b>connaissances préexistantes</b>.</p><p class="example">"Écris une fonction Python qui calcule la factorielle d\'un nombre."</p></div>'
+          + '<div class="card"><span class="badge">One-Shot</span><h3 style="margin-top:.5rem">Un exemple fourni</h3><p>Clarifie les attentes : <b>style, nommage, format</b> de retour. L\'IA calque sa réponse sur l\'exemple donné.</p></div>'
+          + '<div class="card"><span class="badge">Few-Shot</span><h3 style="margin-top:.5rem">Deux exemples ou plus</h3><p>Reconnaissance de <b>patterns</b> · tâches complexes · réponses plus précises et cohérentes.</p></div>'
+          + '</div>'
+        // Notes: Zero-shot = aucun exemple, juste une instruction. L'IA puise dans ses connaissances d'entraînement.
+        // One-shot = un exemple pour clarifier le style attendu, le format de retour, le nommage.
+        // Few-shot = 2+ exemples pour les patterns complexes — l'IA reconnaît la structure et la répète.
+        // Application directe dans Copilot : mettre des exemples dans copilot-instructions.md ou dans le prompt = few-shot implicite.
+      },
       // ─── SLIDE 0: Écosystème workflows IA ───
       {
         kind: 'split',
@@ -264,10 +412,24 @@
       const slideEl = document.createElement('section');
       slideEl.className = 'slide';
       slideEl.dataset.index = index;
+      if (slide.bgImage) {
+        var bgEl = document.createElement('div');
+        bgEl.style.cssText = 'position:absolute;inset:0;background-image:url(\'' + slide.bgImage + '\');background-size:cover;background-position:center;opacity:' + (slide.bgOpacity != null ? slide.bgOpacity : 0.25) + ';z-index:0;pointer-events:none;';
+        slideEl.appendChild(bgEl);
+      }
       let inner = '';
       const heading = '<div class="kicker reveal">' + (slide.kicker || '') + '</div><h2 class="reveal">' + slide.title + '</h2>';
 
-      if (slide.kind === 'split') {
+      if (slide.kind === 'title') {
+        inner = (slide.logoLeft || '')
+          + (slide.logoRight || '')
+          + '<div class="slide-content stack" style="justify-items:center;text-align:center;row-gap:clamp(.9rem,2.2vh,1.8rem)">'
+          + '<div class="kicker reveal">' + slide.meta + '</div>'
+          + '<h1 class="reveal" style="font-size:clamp(2.6rem,7vw,5.8rem);letter-spacing:-.04em;line-height:.9">' + slide.title + '</h1>'
+          + '<p class="lede reveal" style="font-size:clamp(1rem,1.8vw,1.5rem);max-width:none;color:var(--accent-2)">' + slide.subtitle + '</p>'
+          + '<div class="reveal" style="margin-top:clamp(.4rem,1.5vh,.8rem);width:100%;display:flex;justify-content:center">' + slide.speakers + '</div>'
+          + '</div>';
+      } else if (slide.kind === 'split') {
         inner = '<div class="slide-content split"><div>' + heading + slide.left + '</div><div class="reveal">' + slide.right + '</div></div>';
       } else if (slide.kind === 'code') {
         inner = '<div class="slide-content stack">' + heading + '<pre class="code reveal">' + slide.code + '</pre></div>';
@@ -275,6 +437,13 @@
         inner = '<div class="slide-content stack">' + heading + '<div class="reveal"><img class="img" src="' + slide.image + '" alt="' + slide.title + '" /><div class="caption">' + slide.caption + '</div></div></div>';
       } else if (slide.kind === 'stack') {
         inner = '<div class="slide-content stack">' + heading + slide.content + '</div>';
+      } else if (slide.kind === 'centered-quote') {
+        inner = '<div class="slide-content stack" style="justify-items:center;text-align:center;align-content:center;height:100%"><blockquote class="reveal" style="font-size:clamp(1.1rem,2.2vw,1.8em);font-style:italic;font-weight:700;line-height:1.4;max-width:80%;border:none;background:none;padding:0;color:var(--accent-2);">' + slide.quote + '</blockquote></div>';
+      } else if (slide.kind === 'centered-title') {
+        inner = '<div class="slide-content stack" style="justify-items:center;text-align:center;align-content:center;height:100%;row-gap:clamp(.8rem,2vh,1.4rem)">'
+          + '<h1 class="reveal" style="font-size:clamp(2rem,5vw,4.2rem);letter-spacing:-.04em;line-height:.95">' + slide.title + '</h1>'
+          + '<p class="reveal lede" style="font-size:clamp(1rem,2.2vw,1.7rem);color:var(--accent-2);max-width:none;margin-top:.6rem">' + slide.subtitle + '</p>'
+          + '</div>';
       }
       slideEl.innerHTML = inner;
       return slideEl;
