@@ -177,7 +177,8 @@
       {
         kind: 'centered-title',
         title: '"Je connais Copilot"',
-        subtitle: '🤚 Levez la main &mdash; baissez-la quand vous ne savez plus'
+        subtitle: '🤚 Levez la main &mdash; baissez-la quand vous ne savez plus',
+        image: 'assets/kung-fu.gif'
         // Notes: Pour vérifier votre connaissance de copilot, procédons à un petit jeu.
         // Tout le monde lève la main, vous la gardez tout le temps en l'air et dès que vous ne connaissez pas la réponse, vous baissez la main.
         // Exemple : Qui est reconnaissant pour l'accueil de Sfeir aujourd'hui ? / Qui connaît la 7ième décimale de Pi ? (π = 3,14159265... c'est 6)
@@ -443,6 +444,7 @@
         inner = '<div class="slide-content stack" style="justify-items:center;text-align:center;align-content:center;height:100%;row-gap:clamp(.8rem,2vh,1.4rem)">'
           + '<h1 class="reveal" style="font-size:clamp(2rem,5vw,4.2rem);letter-spacing:-.04em;line-height:.95">' + slide.title + '</h1>'
           + '<p class="reveal lede" style="font-size:clamp(1rem,2.2vw,1.7rem);color:var(--accent-2);max-width:none;margin-top:.6rem">' + slide.subtitle + '</p>'
+          + (slide.image ? '<div class="reveal" style="margin-top:.4rem"><img src="' + slide.image + '" alt="" style="max-height:min(38vh,320px);border-radius:1rem;object-fit:contain;" /></div>' : '')
           + '</div>';
       }
       slideEl.innerHTML = inner;
