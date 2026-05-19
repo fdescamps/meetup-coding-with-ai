@@ -10,7 +10,7 @@ on:
     inputs:
       issue_number:
         description: The issue to orchestrate.
-        required: true
+        required: false
         type: string
       story_type:
         description: functional or technical (auto-detected from labels if omitted).

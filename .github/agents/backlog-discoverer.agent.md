@@ -1,6 +1,6 @@
 ---
 name: backlog-discoverer
-description: "Use when discovering, triaging, or prioritizing GitHub issues for a project. Supports three discovery modes: user-assigned issues, artifact-driven discovery from code changes, and search-based exploration. Activate on 'discover backlog', 'triage issues', 'what should I work on', 'find open issues', or when the SDLC pipeline starts."
+description: "Use when discovering and triaging GitHub issues for a project. Supports two discovery modes: user-assigned (single issue) and batch-milestone (multiple issues). Activate when the SDLC pipeline starts."
 model: inherit
 user-invocable: true
 tools: read/readFile, write/createFile, write/editFile, search/codebase
@@ -65,22 +65,24 @@ Load each skill before starting. Only announce missing ones: `[SKILL MISSING] {s
 
 Three modes are available. Determine mode from user intent. Default to **user-assigned** if intent is unclear.
 
+Always account for both modes in the triage report:
+- exactly 1 mode is **selected** for execution
+- the other mode is marked **skipped** with an explicit reason
+- a skipped mode is valid when the reason is concrete (for example: "manual run forced user-assigned", "issue body did not provide search qualifiers", "no recent modified files")
+
 ### Mode 1 — User-Assigned (Default)
 - **When**: "what should I work on", "my issues", no explicit mode mentioned
-- **Base query**: `assignee:@me is:open is:issue sort:updated-desc`
 - **Logic**: Surfaces all open issues assigned to the current user, sorted by recent activity
+- **Scope**: Single issue (#N that was marked)
+- **Base query**: `assignee:@me is:open is:issue sort:updated-desc issue:{issue_number}`
 
-### Mode 2 — Artifact-Driven
-- **When**: developer is actively working on a domain area, "issues related to my changes"
-- **Logic**: Extract domain terms from recently modified files (git log), build search query from those terms
-- **Command**: `git log --since="7 days ago" --diff-filter=M --name-only --pretty=format: | sort -u`
-- **Term extraction**: split PascalCase file names → filter infrastructure terms → keep domain nouns
-- **Query**: `{term1} OR {term2} in:title is:open is:issue`
 
-### Mode 3 — Search-Based
+### Mode 2 — Search-Based
 - **When**: explicit exploration — user provides labels, milestone, or keywords
 - **Logic**: Build composite query from user-provided qualifiers
 - **Examples**: `label:bug is:open is:issue`, `milestone:v0.2 is:open is:issue`
+- **Scope**: All open issues in the named milestone
+- **Base query**: `milestone:{milestone_name} is:open is:issue`
 
 ---
 

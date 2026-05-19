@@ -76,13 +76,13 @@ Execute each lens independently. Record findings per gate before moving to the n
 
 | Gate | ID | Definition | Pass Condition | Severity |
 |---|---|---|---|---|
-| Mode coverage | G1 | All 3 discovery modes were considered, or the triage report explicitly documents why a mode was skipped (e.g., "artifact-driven skipped: no recent commits"). | All modes accounted for. | HIGH |
+| Mode coverage | G1 | Both discovery modes are accounted for in the triage report: exactly one selected for execution and the other marked skipped with an explicit reason. | Both modes accounted for with a concrete skipped reason. | HIGH |
 | No missing P0/P1 | G2 | No P0 or P1 issues exist in the repository but are absent from the triage report. Check: query the repo for open issues with `priority/P0` or `priority/P1` labels; verify the top 5 by creation date appear in the triage. | Zero critical issues absent from triage. | BLOCKER |
 
 **Checking G1:**
 1. Read the "Discovery Mode" section of the triage report
-2. Verify which of the 3 modes was used
-3. If only 1 mode used: check if the report justifies skipping the others
+2. Verify which of the 2 modes was selected
+3. Verify the other mode is explicitly marked as skipped with a concrete reason
 4. If no justification: G1 fails
 
 **Checking G2:**
@@ -197,7 +197,7 @@ synthesis:
   blocking_findings:
     - "G2: Issue #43 (P0 — driver age validation blocking submission) absent from triage"
   recommendations:
-    - "Re-run discovery with mode 2 (artifact-driven) to catch domain-specific P0s"
+    - "Re-run discovery with mode 2 (search-based) to validate issue coverage against explicit qualifiers"
   dissent: "No lens disagreement."
 ```
 
