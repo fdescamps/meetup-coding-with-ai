@@ -19,7 +19,7 @@ on:
         type: string
         default: "functional"
       working_branch:
-        description: Branch sdlc/{N}-{slug} for this issue.
+        description: "Branch for this issue (preferred: sdlc/{issue_number}-{slug})."
         required: true
         type: string
 

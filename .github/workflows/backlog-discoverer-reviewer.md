@@ -21,7 +21,7 @@ on:
         type: string
         default: "functional"
       working_branch:
-        description: Branch sdlc/{N}-{slug} created by backlog-discoverer.
+        description: "Canonical branch for this issue (preferred: sdlc/{issue_number}-{slug})."
         required: false
         type: string
 
@@ -78,10 +78,15 @@ source: SebastienDegodez/agentic-project-demo/catalog/skraft-pipeline/backlog-di
 If both `issue_number` and `milestone` are empty, call `noop` and stop:
 - Message: "Missing review target: provide issue_number (single issue) or milestone (batch mode)."
 
+Branch handoff rule:
+- Treat `working_branch` as an opaque canonical identifier.
+- Never prepend or recompute `sdlc/` in reviewers.
+- If `working_branch` starts with `sdlc/sdlc/`, call `noop` and stop with an explicit error.
+
 After rendering your structured verdict:
 
 | Verdict | Action |
 |---------|--------|
-| **APPROVED** | If `issue_number` is present: dispatch `backlog-planner` with `issue_number` + `story_type` + `working_branch`. If milestone-only: add a summary comment and do not dispatch downstream workflow. |
-| **RETRY** (minor issues) | If `issue_number` is present: dispatch `backlog-discoverer` with `issue_number` + `working_branch`. If milestone-only: dispatch `backlog-discoverer` with `milestone`. |
+| **APPROVED** | If `issue_number` is present: dispatch `backlog-planner` with `issue_number` + `story_type` + `working_branch` (unchanged pass-through). If milestone-only: add a summary comment and do not dispatch downstream workflow. |
+| **RETRY** (minor issues) | If `issue_number` is present: dispatch `backlog-discoverer` with `issue_number` + `working_branch` (unchanged pass-through). If milestone-only: dispatch `backlog-discoverer` with `milestone`. |
 | **BLOCKED** (major blocker) | Add `state:blocked`. Do NOT dispatch. |

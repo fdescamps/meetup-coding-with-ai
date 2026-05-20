@@ -1,4 +1,4 @@
-# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"4ca765dcc7b9d4fc70fe4c851fbcb8d6331974f6bc80082ec4127f49f89d7588","compiler_version":"v0.74.4","strict":true,"agent_id":"copilot"}
+# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"1561bf80c2c4b6b2b32dea6a88ad80ea1e8387843e7e80abcf15d242cdbfe7aa","compiler_version":"v0.74.4","strict":true,"agent_id":"copilot"}
 # gh-aw-manifest: {"version":1,"secrets":["COPILOT_GITHUB_TOKEN","GH_AW_CI_TRIGGER_TOKEN","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN"],"actions":[{"repo":"actions/checkout","sha":"de0fac2e4500dabe0009e67214ff5f5447ce83dd","version":"v6.0.2"},{"repo":"actions/download-artifact","sha":"3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c","version":"v8.0.1"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9.0.0"},{"repo":"actions/upload-artifact","sha":"043fb46d1a93c77aae656e7c1c64a875d1fc6a0a","version":"v7.0.1"},{"repo":"github/gh-aw-actions/setup","sha":"v0.74.4","version":"v0.74.4"}],"containers":[{"image":"ghcr.io/github/gh-aw-firewall/agent:0.25.46"},{"image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.25.46"},{"image":"ghcr.io/github/gh-aw-firewall/squid:0.25.46"},{"image":"ghcr.io/github/gh-aw-mcpg:v0.3.9","digest":"sha256:64828b42a4482f58fab16509d7f8f495a6d97c972a98a68aff20543531ac0388","pinned_image":"ghcr.io/github/gh-aw-mcpg:v0.3.9@sha256:64828b42a4482f58fab16509d7f8f495a6d97c972a98a68aff20543531ac0388"},{"image":"ghcr.io/github/github-mcp-server:v1.0.4"},{"image":"node:lts-alpine","digest":"sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f","pinned_image":"node:lts-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f"}]}
 #    ___                   _   _      
 #   / _ \                 | | (_)     
@@ -86,7 +86,7 @@ on:
         required: false
         type: string
       working_branch:
-        description: Branch sdlc/{N}-{slug} for this issue.
+        description: "Branch for this issue (preferred: sdlc/{issue_number}-{slug})."
         required: true
         type: string
 
@@ -225,24 +225,24 @@ jobs:
         run: |
           bash "${RUNNER_TEMP}/gh-aw/actions/create_prompt_first.sh"
           {
-          cat << 'GH_AW_PROMPT_8a758a95b950ad87_EOF'
+          cat << 'GH_AW_PROMPT_afbf07e1598f3f01_EOF'
           <system>
-          GH_AW_PROMPT_8a758a95b950ad87_EOF
+          GH_AW_PROMPT_afbf07e1598f3f01_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/xpia.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/temp_folder_prompt.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/markdown.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_prompt.md"
-          cat << 'GH_AW_PROMPT_8a758a95b950ad87_EOF'
+          cat << 'GH_AW_PROMPT_afbf07e1598f3f01_EOF'
           <safe-output-tools>
           Tools: add_comment(max:2), create_pull_request, add_labels(max:2), remove_labels, push_to_pull_request_branch, dispatch_workflow, missing_tool, missing_data, noop
-          GH_AW_PROMPT_8a758a95b950ad87_EOF
+          GH_AW_PROMPT_afbf07e1598f3f01_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_create_pull_request.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_push_to_pr_branch.md"
-          cat << 'GH_AW_PROMPT_8a758a95b950ad87_EOF'
+          cat << 'GH_AW_PROMPT_afbf07e1598f3f01_EOF'
           </safe-output-tools>
-          GH_AW_PROMPT_8a758a95b950ad87_EOF
+          GH_AW_PROMPT_afbf07e1598f3f01_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/mcp_cli_tools_prompt.md"
-          cat << 'GH_AW_PROMPT_8a758a95b950ad87_EOF'
+          cat << 'GH_AW_PROMPT_afbf07e1598f3f01_EOF'
           <github-context>
           The following GitHub context information is available for this workflow:
           {{#if github.actor}}
@@ -274,13 +274,13 @@ jobs:
             - **Note**: If a branch you need is not in the list above and is not listed as an additional fetched ref, it has NOT been checked out. For private repositories you cannot fetch it without proper authentication. If the branch is required and not available, exit with an error and ask the user to add it to the `fetch:` option of the `checkout:` configuration (e.g., `fetch: ["refs/pulls/open/*"]` for all open PR refs, or `fetch: ["main", "feature/my-branch"]` for specific branches).
           </github-context>
           
-          GH_AW_PROMPT_8a758a95b950ad87_EOF
+          GH_AW_PROMPT_afbf07e1598f3f01_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/github_mcp_tools_with_safeoutputs_prompt.md"
-          cat << 'GH_AW_PROMPT_8a758a95b950ad87_EOF'
+          cat << 'GH_AW_PROMPT_afbf07e1598f3f01_EOF'
           </system>
           {{#runtime-import .github/agents/software-engineer.agent.md}}
           {{#runtime-import .github/workflows/software-engineer.md}}
-          GH_AW_PROMPT_8a758a95b950ad87_EOF
+          GH_AW_PROMPT_afbf07e1598f3f01_EOF
           } > "$GH_AW_PROMPT"
       - name: Interpolate variables and render templates
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -509,9 +509,9 @@ jobs:
           mkdir -p "${RUNNER_TEMP}/gh-aw/safeoutputs"
           mkdir -p /tmp/gh-aw/safeoutputs
           mkdir -p /tmp/gh-aw/mcp-logs/safeoutputs
-          cat > "${RUNNER_TEMP}/gh-aw/safeoutputs/config.json" << 'GH_AW_SAFE_OUTPUTS_CONFIG_320e586a3da9e0ce_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/safeoutputs/config.json" << 'GH_AW_SAFE_OUTPUTS_CONFIG_fb22506652e6b7e4_EOF'
           {"add_comment":{"max":2,"target":"*"},"add_labels":{"allowed":["state:review-needed","state:blocked"],"max":2,"target":"*"},"create_pull_request":{"draft":true,"labels":["skraft","skraft:pr"],"max":1,"max_patch_files":100,"max_patch_size":1024,"protect_top_level_dot_folders":true,"protected_files":["package.json","bun.lockb","bunfig.toml","deno.json","deno.jsonc","deno.lock","global.json","NuGet.Config","Directory.Packages.props","mix.exs","mix.lock","go.mod","go.sum","stack.yaml","stack.yaml.lock","pom.xml","build.gradle","build.gradle.kts","settings.gradle","settings.gradle.kts","gradle.properties","package-lock.json","yarn.lock","pnpm-lock.yaml","npm-shrinkwrap.json","requirements.txt","Pipfile","Pipfile.lock","pyproject.toml","setup.py","setup.cfg","Gemfile","Gemfile.lock","uv.lock","CODEOWNERS","DESIGN.md","README.md","CONTRIBUTING.md","CHANGELOG.md","SECURITY.md","CODE_OF_CONDUCT.md","AGENTS.md","CLAUDE.md","GEMINI.md"],"protected_files_policy":"fallback-to-issue","title_prefix":"[skraft] "},"create_report_incomplete_issue":{},"dispatch_workflow":{"aw_context_workflows":["software-engineer-reviewer"],"max":1,"workflow_files":{"software-engineer-reviewer":".lock.yml"},"workflows":["software-engineer-reviewer"]},"missing_data":{},"missing_tool":{},"noop":{"max":1,"report-as-issue":"true"},"push_to_pull_request_branch":{"if_no_changes":"warn","max":1,"max_patch_size":1024,"protect_top_level_dot_folders":true,"protected_dot_folder_excludes":[".skraft/"],"protected_files":["package.json","bun.lockb","bunfig.toml","deno.json","deno.jsonc","deno.lock","global.json","NuGet.Config","Directory.Packages.props","mix.exs","mix.lock","go.mod","go.sum","stack.yaml","stack.yaml.lock","pom.xml","build.gradle","build.gradle.kts","settings.gradle","settings.gradle.kts","gradle.properties","package-lock.json","yarn.lock","pnpm-lock.yaml","npm-shrinkwrap.json","requirements.txt","Pipfile","Pipfile.lock","pyproject.toml","setup.py","setup.cfg","Gemfile","Gemfile.lock","uv.lock","CODEOWNERS","DESIGN.md","README.md","CONTRIBUTING.md","CHANGELOG.md","SECURITY.md","CODE_OF_CONDUCT.md","AGENTS.md","CLAUDE.md","GEMINI.md"],"protected_files_policy":"blocked","target":"*","title_prefix":"[skraft] "},"remove_labels":{"allowed":["state:impl-needed"],"max":1,"target":"*"},"report_incomplete":{}}
-          GH_AW_SAFE_OUTPUTS_CONFIG_320e586a3da9e0ce_EOF
+          GH_AW_SAFE_OUTPUTS_CONFIG_fb22506652e6b7e4_EOF
       - name: Generate Safe Outputs Tools
         env:
           GH_AW_TOOLS_META_JSON: |
@@ -555,7 +555,7 @@ jobs:
                         "type": "string"
                       },
                       "working_branch": {
-                        "description": "Branch sdlc/{N}-{slug} for this issue.",
+                        "description": "Canonical branch for this issue (preferred: sdlc/{issue_number}-{slug}).",
                         "type": "string"
                       }
                     },
@@ -852,7 +852,7 @@ jobs:
           
           mkdir -p /home/runner/.copilot
           GH_AW_NODE=$(which node 2>/dev/null || command -v node 2>/dev/null || echo node)
-          cat << GH_AW_MCP_CONFIG_b35dfed67f4113af_EOF | "$GH_AW_NODE" "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.cjs"
+          cat << GH_AW_MCP_CONFIG_ce32abc0227db943_EOF | "$GH_AW_NODE" "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.cjs"
           {
             "mcpServers": {
               "github": {
@@ -893,7 +893,7 @@ jobs:
               "payloadDir": "${MCP_GATEWAY_PAYLOAD_DIR}"
             }
           }
-          GH_AW_MCP_CONFIG_b35dfed67f4113af_EOF
+          GH_AW_MCP_CONFIG_ce32abc0227db943_EOF
       - name: Mount MCP servers as CLIs
         id: mount-mcp-clis
         continue-on-error: true

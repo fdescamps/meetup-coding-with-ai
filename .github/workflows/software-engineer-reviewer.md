@@ -28,7 +28,7 @@ on:
         type: string
         default: "1"
       working_branch:
-        description: Branch sdlc/{N}-{slug} for this issue.
+        description: "Canonical branch for this issue (preferred: sdlc/{issue_number}-{slug})."
         required: true
         type: string
 
@@ -92,10 +92,17 @@ source: SebastienDegodez/agentic-project-demo/catalog/skraft-pipeline/software-e
 
 After rendering your verdict:
 
+## Working Branch Contract
+
+- `working_branch` is required input and remains the source of truth.
+- Never recompute branch from issue title in this workflow.
+- Always dispatch downstream workflows with the same `working_branch` value.
+- If malformed `sdlc/sdlc/` is encountered, normalize once to `sdlc/` + remainder before checkout/dispatch.
+
 | Verdict | Action |
 |---------|--------|
 | **APPROVED** | Submit `APPROVE` review → add `state:done` → remove `state:review-needed` |
-| **KICKBACK** | Submit `REQUEST_CHANGES` → dispatch `software-engineer` with `iteration+1` + `working_branch` |
+| **KICKBACK** | Submit `REQUEST_CHANGES` → dispatch `software-engineer` with `iteration+1` + `working_branch` (unchanged pass-through) |
 | **BLOCKED** | Submit `COMMENT` → add `state:blocked` → do NOT dispatch |
 
 Max iterations: if `${{ github.event.inputs.iteration }}` > 3, add `state:blocked` and stop.

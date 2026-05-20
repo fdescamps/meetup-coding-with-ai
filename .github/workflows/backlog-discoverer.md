@@ -25,7 +25,7 @@ on:
         type: choice
         options: [user-assigned, search-based]
       working_branch:
-        description: "Optional branch override for manual replay."
+        description: "Optional branch override for manual replay (preferred format: sdlc/{issue_number}-{slug})."
         required: false
         type: string
 
@@ -132,11 +132,14 @@ When triggered by the `sdlc` label, or manually with `issue_number` (or `mode=us
 
 1. **State Check**: If the issue already has any `state:*` label (other than `state:blocked`), stop — it was already processed.
 
-2. **Compute working branch name** from issue title:
-   - Fetch the issue title via the GitHub API
-   - Slugify: lowercase, replace every non-alphanumeric character with `-`, truncate to 50 characters, trim leading/trailing hyphens
-   - `working_branch` = `sdlc/{issue_number}-{slug}`
-   - Example: issue #42 "Add eligibility check for young drivers" → `sdlc/42-add-eligibility-check-for-young-drivers`
+2. **Resolve deterministic working branch**:
+  - Fetch issue title via GitHub API.
+  - Run shared resolver:
+    - `bash .github/scripts/resolve-working-branch.sh --issue-number "{issue_number}" --issue-title "{issue_title}" --working-branch "{workflow_dispatch.inputs.working_branch}"`
+  - Resolver guarantees:
+    - provided `working_branch` stays source of truth after normalization
+    - otherwise branch is computed as `sdlc/{issue_number}-{slug}`
+  - Store the result as `working_branch_resolved`.
 
 3. **Execute discovery protocol** for this single issue (Phase 1–6 in backlog-discoverer.agent.md)
 
@@ -147,7 +150,7 @@ When triggered by the `sdlc` label, or manually with `issue_number` (or `mode=us
 5. **Dispatch reviewer** with:
   - `issue_number`: `${{ github.event.inputs.issue_number || github.event.issue.number }}`
    - `story_type`: (as detected in Phase 3 — `functional` or `technical`)
-  - `working_branch`: (as computed above — `sdlc/{issue_number}-{slug}`), unless `workflow_dispatch.inputs.working_branch` is provided
+  - `working_branch`: `working_branch_resolved` (propagate unchanged)
 
 ### Scenario 2: Batch/Milestone (from `workflow_dispatch` event)
 
