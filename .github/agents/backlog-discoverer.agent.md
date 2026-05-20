@@ -69,6 +69,11 @@ Always account for both modes in the triage report:
 - exactly 1 mode is **selected** for execution
 - the other mode is marked **skipped** with an explicit reason
 - a skipped mode is valid when the reason is concrete (for example: "manual run forced user-assigned", "issue body did not provide search qualifiers", "no recent modified files")
+- this evidence MUST be written as two explicit lines in the triage report under `## Discovery Mode Coverage`:
+  - `User-assigned: selected|skipped — <reason>`
+  - `Search-based: selected|skipped — <reason>`
+- for single-issue runs, REQUIRED skipped line example:
+  - `Search-based: skipped — single user-assigned issue; no milestone or batch target.`
 
 ### Mode 1 — User-Assigned (Default)
 - **When**: "what should I work on", "my issues", no explicit mode mentioned
@@ -175,6 +180,7 @@ Both files must include:
 - Query string(s) executed
 - Total issues found / triaged
 - Timestamp
+- Discovery Mode Coverage block with explicit selected/skipped reason for both modes
 
 ---
 
@@ -186,9 +192,13 @@ Both files must include:
 # Triage Report — {YYYY-MM-DD}
 
 ## Discovery Mode
-{user-assigned | artifact-driven | search-based}
+{user-assigned | search-based}
 Query: `{query string}`
 Issues found: {N} | Issues triaged: {N}
+
+## Discovery Mode Coverage
+User-assigned: {selected|skipped} — {reason}
+Search-based: {selected|skipped} — {reason}
 
 ## Triaged Issues
 

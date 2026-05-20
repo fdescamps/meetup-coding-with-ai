@@ -76,14 +76,18 @@ Execute each lens independently. Record findings per gate before moving to the n
 
 | Gate | ID | Definition | Pass Condition | Severity |
 |---|---|---|---|---|
-| Mode coverage | G1 | Both discovery modes are accounted for in the triage report: exactly one selected for execution and the other marked skipped with an explicit reason. | Both modes accounted for with a concrete skipped reason. | HIGH |
+| Mode coverage | G1 | Both discovery modes are explicitly documented in the triage report with one line per mode. | Both lines are present: `User-assigned: selected|skipped — <reason>` and `Search-based: selected|skipped — <reason>`. | HIGH |
 | No missing P0/P1 | G2 | No P0 or P1 issues exist in the repository but are absent from the triage report. Check: query the repo for open issues with `priority/P0` or `priority/P1` labels; verify the top 5 by creation date appear in the triage. | Zero critical issues absent from triage. | BLOCKER |
 
 **Checking G1:**
-1. Read the "Discovery Mode" section of the triage report
-2. Verify which of the 2 modes was selected
-3. Verify the other mode is explicitly marked as skipped with a concrete reason
-4. If no justification: G1 fails
+1. Read the `Discovery Mode Coverage` section of the triage report
+2. Verify both explicit lines are present:
+  - `User-assigned: selected|skipped — <reason>`
+  - `Search-based: selected|skipped — <reason>`
+3. Verify exactly one mode is `selected` and the other is `skipped` with a concrete reason
+4. For single-issue runs, accept this canonical skipped reason for search-based mode:
+  - `Search-based: skipped — single user-assigned issue; no milestone or batch target.`
+5. If a line is missing or skipped reason is vague: G1 fails
 
 **Checking G2:**
 1. Query GitHub: `label:priority/P0,priority/P1 is:open is:issue sort:created-desc`
