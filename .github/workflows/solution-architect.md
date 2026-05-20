@@ -61,11 +61,6 @@ safe-outputs:
   dispatch-workflow:
     workflows: [solution-architect-reviewer]
     max: 1
-  push-to-pull-request-branch:
-    protected-files:
-      policy: blocked
-      exclude:
-        - .skraft/
 source: SebastienDegodez/agentic-project-demo/catalog/skraft-pipeline/solution-architect.md@main
 ---
 

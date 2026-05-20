@@ -67,11 +67,6 @@ safe-outputs:
   dispatch-workflow:
     workflows: [acceptance-designer-reviewer]
     max: 1
-  push-to-pull-request-branch:
-    protected-files:
-      policy: blocked
-      exclude:
-        - .skraft/
 source: SebastienDegodez/agentic-project-demo/catalog/skraft-pipeline/acceptance-designer.md@main
 ---
 
