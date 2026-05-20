@@ -5,7 +5,7 @@ description: |
   workflow_dispatch from acceptance-designer-reviewer (new impl) or
   software-engineer-reviewer (kickback). Implements the plan via
   Outside-In TDD, opens or updates a draft PR, and dispatches the
-  software-engineer-reviewer.
+  software-engineer-reviewer after persistence is confirmed.
 
 on:
   workflow_dispatch:
@@ -108,6 +108,19 @@ source: SebastienDegodez/agentic-project-demo/catalog/skraft-pipeline/software-e
 - `working_branch` is required input and remains the source of truth.
 - Do not recompute branch name from issue title in this workflow.
 - If malformed `sdlc/sdlc/` is encountered, normalize once to `sdlc/` + remainder before use.
+
+## Persistence Contract (MANDATORY)
+
+This workflow guarantees persistence before reviewer dispatch:
+
+1. Apply implementation changes and update the PR branch (`create-pull-request` or `push-to-pull-request-branch`).
+2. Confirm changes are persisted remotely (not local-only).
+3. Treat any push/auth/write failure as BLOCKED:
+  - add label `state:blocked`
+  - post one concise blocker comment
+  - do **not** dispatch `software-engineer-reviewer`
+
+Reviewer dispatch is allowed only after remote persistence succeeds.
 
 After executing the full protocol, dispatch `software-engineer-reviewer` with:
 - `issue_number`: ${{ github.event.inputs.issue_number }}
