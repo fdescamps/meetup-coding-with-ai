@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'presentation-skraft-workflow-demo.html'
+      - 'presentation-skraft-agents.html'
       - 'assets/**'
       - '.github/workflows/deploy-presentation.yml'
   workflow_dispatch:
@@ -34,6 +35,10 @@ jobs:
         run: |
           mkdir -p _site
           cp presentation-skraft-workflow-demo.html _site/index.html
+          cp presentation-skraft-workflow-demo.html _site/index.html
+          if [ -f presentation-skraft-agents.html ]; then
+            cp presentation-skraft-agents.html _site/presentation-skraft-agents.html
+          fi
           if [ -d assets ]; then cp -r assets _site/assets; fi
 
       - name: Upload Pages artifact
