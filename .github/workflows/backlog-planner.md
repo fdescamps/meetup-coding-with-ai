@@ -51,6 +51,24 @@ safe-outputs:
   add-comment:
     max: 2
     target: "*"
+  push-to-pull-request-branch:
+    target: "*"
+    title-prefix: "[skraft] "
+    max: 1
+    protected-files:
+      policy: blocked
+      exclude:
+        - .skraft/
+  create-pull-request:
+    draft: true
+    preserve-branch-name: true
+    recreate-ref: true
+    base-branch: main
+    max: 1
+    protected-files:
+      policy: blocked
+      exclude:
+        - .skraft/
   add-labels:
     allowed: [state:design-needed, state:blocked]
     max: 2
@@ -79,11 +97,8 @@ source: SebastienDegodez/agentic-project-demo/catalog/skraft-pipeline/backlog-pl
 This workflow guarantees persistence before reviewer dispatch:
 
 1. Generate DISCUSS artefacts (`.skraft/sdlc/discuss/stories-{milestone}.md` and `ac-draft-{story}.md`).
-2. Persist in the same run on `working_branch`:
-  - `git add .skraft/sdlc/discuss/`
-  - `git commit -m "chore(sdlc): persist discuss artefacts for #${{ github.event.inputs.issue_number }}"` (skip commit only if no file changed)
-  - `git push origin "${{ github.event.inputs.working_branch }}"`
-3. Treat any push/auth/write failure as BLOCKED:
+2. Persist artefacts remotely by updating an existing PR branch via `push-to-pull-request-branch`; if no PR exists yet for `working_branch`, fallback to `create-pull-request`.
+3. Treat any remote persistence failure (PR create/update/auth/write) as BLOCKED:
   - add label `state:blocked`
   - post one concise blocker comment
   - do **not** dispatch `backlog-planner-reviewer`
