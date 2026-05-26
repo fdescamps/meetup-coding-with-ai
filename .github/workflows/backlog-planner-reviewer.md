@@ -50,8 +50,8 @@ safe-outputs:
     max: 1
     target: "*"
   add-labels:
-    allowed: [state:blocked]
-    max: 1
+    allowed: [state:blocked, state:human-approval-needed]
+    max: 2
     target: "*"
   dispatch-workflow:
     workflows: [solution-architect, backlog-planner]
@@ -81,6 +81,6 @@ After rendering your structured verdict:
 
 | Verdict | Action |
 |---------|--------|
-| **APPROVED** | Dispatch `solution-architect` with `issue_number` + `story_type` + `working_branch` (unchanged pass-through) |
+| **APPROVED** | **Human gate check:** if the issue HAS the `human:gate` label, add `state:human-approval-needed` and do NOT dispatch — a human must add `human:handoff-next` to proceed. Otherwise (default): dispatch `solution-architect` with `issue_number` + `story_type` + `working_branch` (unchanged pass-through). |
 | **RETRY** (minor issues) | Dispatch `backlog-planner` with `issue_number` + `story_type` + `working_branch` (unchanged pass-through) |
 | **BLOCKED** (major blocker) | Add `state:blocked`. Do NOT dispatch. |

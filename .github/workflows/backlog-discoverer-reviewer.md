@@ -54,8 +54,8 @@ safe-outputs:
     max: 1
     target: "*"
   add-labels:
-    allowed: [state:blocked]
-    max: 1
+    allowed: [state:blocked, state:human-approval-needed]
+    max: 2
     target: "*"
   dispatch-workflow:
     workflows: [backlog-planner, backlog-discoverer]
@@ -87,6 +87,6 @@ After rendering your structured verdict:
 
 | Verdict | Action |
 |---------|--------|
-| **APPROVED** | If `issue_number` is present: dispatch `backlog-planner` with `issue_number` + `story_type` + `working_branch` (unchanged pass-through). If milestone-only: add a summary comment and do not dispatch downstream workflow. |
+| **APPROVED** | **Human gate check:** if the issue HAS the `human:gate` label, add `state:human-approval-needed` and do NOT dispatch — a human must add `human:handoff-next` to proceed. Otherwise (default): dispatch `backlog-planner` with `issue_number` + `story_type` + `working_branch` (unchanged pass-through). If milestone-only: add a summary comment and do not dispatch downstream workflow. |
 | **RETRY** (minor issues) | If `issue_number` is present: dispatch `backlog-discoverer` with `issue_number` + `working_branch` (unchanged pass-through). If milestone-only: dispatch `backlog-discoverer` with `milestone`. |
 | **BLOCKED** (major blocker) | Add `state:blocked`. Do NOT dispatch. |

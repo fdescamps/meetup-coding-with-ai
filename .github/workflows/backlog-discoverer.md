@@ -77,6 +77,7 @@ safe-outputs:
       policy: blocked
       exclude:
         - .skraft/
+        - .github/instructions/business-lexicon.instructions.md
 ---
 
 # Backlog-Discoverer Agent

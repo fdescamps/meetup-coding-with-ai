@@ -68,7 +68,7 @@ safe-outputs:
     allowed-events: [APPROVE, COMMENT, REQUEST_CHANGES]
     supersede-older-reviews: true
   add-labels:
-    allowed: [state:done, state:impl-needed, state:blocked]
+    allowed: [state:done, state:impl-needed, state:blocked, state:human-approval-needed]
     max: 2
     target: "*"
   remove-labels:
@@ -101,7 +101,7 @@ After rendering your verdict:
 
 | Verdict | Action |
 |---------|--------|
-| **APPROVED** | Submit `APPROVE` review → add `state:done` → remove `state:review-needed` |
+| **APPROVED** | **Human gate check:** if the issue HAS the `human:gate` label, submit `APPROVE` review → add `state:human-approval-needed` — a human must add `human:handoff-next` to mark `state:done`. Otherwise (default): submit `APPROVE` review → add `state:done` → remove `state:review-needed`. |
 | **KICKBACK** | Submit `REQUEST_CHANGES` → dispatch `software-engineer` with `iteration+1` + `working_branch` (unchanged pass-through) |
 | **BLOCKED** | Submit `COMMENT` → add `state:blocked` → do NOT dispatch |
 

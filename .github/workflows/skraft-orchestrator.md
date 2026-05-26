@@ -27,6 +27,9 @@ on:
         required: false
         type: string
         default: ""
+  issues:
+    types: [labeled]
+    names: [human:handoff-next]
   slash_command:
     name: sdlc
     events: [issue_comment]
@@ -60,12 +63,12 @@ safe-outputs:
     max: 2
     target: "*"
   add-labels:
-    allowed: [sdlc, state:blocked]
+    allowed: [sdlc, state:blocked, state:done]
     max: 2
     target: "*"
   remove-labels:
-    allowed: [state:blocked]
-    max: 1
+    allowed: [state:blocked, state:human-approval-needed, human:handoff-next]
+    max: 3
     target: "*"
   dispatch-workflow:
     workflows:
@@ -110,6 +113,7 @@ source: SebastienDegodez/agentic-project-demo/catalog/skraft-pipeline/skraft-orc
 | `state:distill-needed` | Dispatch `solution-architect-reviewer` with `issue_number` + `story_type` + `working_branch` |
 | `state:impl-needed` | Dispatch `acceptance-designer-reviewer` with `issue_number` + `story_type` + `working_branch` |
 | `state:review-needed` | Dispatch `software-engineer-reviewer` with `issue_number` + `story_type` + `working_branch` |
+| `state:human-approval-needed` | **Human gate active.** If the issue also has `human:handoff-next`, remove both labels and resume pipeline by reading the `state:*` label to determine the next agent to dispatch (same resume logic as other states). If `human:handoff-next` is absent, post a status comment and do NOT dispatch — wait for human action. |
 | `state:done` | Post status comment. Pipeline complete. |
 | `state:blocked` | Post status comment explaining the block. Do NOT dispatch. |
 

@@ -59,12 +59,12 @@ safe-outputs:
     target: "*"
   push-to-pull-request-branch:
     target: "*"
-    title-prefix: "[skraft] "
     max: 1
     protected-files:
       policy: blocked
       exclude:
         - .skraft/
+        - .github/instructions/business-lexicon.instructions.md
   create-pull-request:
     draft: true
     preserve-branch-name: true
@@ -75,6 +75,7 @@ safe-outputs:
       policy: blocked
       exclude:
         - .skraft/
+        - .github/instructions/business-lexicon.instructions.md
   add-labels:
     allowed: [state:impl-needed, state:blocked]
     max: 2

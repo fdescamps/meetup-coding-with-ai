@@ -74,12 +74,8 @@ safe-outputs:
     max: 1
   push-to-pull-request-branch:
     target: "*"
-    title-prefix: "[skraft] "
     max: 1
-    protected-files:
-      policy: blocked
-      exclude:
-        - .skraft/
+    protected-files: fallback-to-issue
   add-labels:
     allowed: [state:review-needed, state:blocked]
     max: 2
